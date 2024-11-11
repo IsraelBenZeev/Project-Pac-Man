@@ -13,7 +13,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     KeyHandler keyH = new KeyHandler();
 
-    Pacman pacman = new Pacman(this, keyH);
+    Pacman pacman = new Pacman(keyH);
+    Wall wall = new Wall();
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.WHITE);
@@ -28,6 +29,7 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
     }
+
 
     @Override
     public void run() {
@@ -50,6 +52,13 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         pacman.draw(g2);
+//        for (int i = 0; i < arr.length; i++) {
+//            for (int j = 0; j < arr[i].length; j++) {
+//                if (arr[i][j] == 1) wall.draw(g2,i,j);
+//            }
+
+//        }
+        wall.draw(g2);
         g2.dispose();
 
 

@@ -7,11 +7,11 @@ import java.io.IOException;
 
 public class Pacman extends Entity {
     final int size = 48;
-    public GamePanel gp;
+//    public GamePanel gp;
     public KeyHandler keyH;
 
-    public Pacman(GamePanel gp, KeyHandler keyH) {
-        this.gp = gp;
+    public Pacman( KeyHandler keyH) {
+//        this.gp = gp;
         this.keyH = keyH;
         setImagePacman();
         setDefaultValues();
