@@ -6,36 +6,21 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Pacman extends Entity {
-    final int size = 16;
-    //    public GamePanel gp;
+    final int size = 32;
+//    public GamePanel gp;
     public KeyHandler keyH;
     int currentY;
     int currentX;
-    int[][] arr = {
-           //0//1//2//3//4//5//6//7//8//9//10/11/12/13/14/15
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},//0
-            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},//1
-            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},//2
-            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},//3
-            {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},//4
-            {1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1},//5
-            {1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1},//6
-            {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},//7
-            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},//8
-            {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},//9
-            {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},//10
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},//11
-    };
-
-    public Pacman(KeyHandler keyH) {
+    public Pacman(KeyHandler keyH, GamePanel gp) {
         this.keyH = keyH;
+        this.gp = gp;
         setImagePacman();
         setDefaultValues();
     }
 
     public void setDefaultValues() {
-        x = 48;
-        y = 48;
+        x = 32;
+        y = 32;
         speed = 4;
         direction = "down";
     }
@@ -64,6 +49,7 @@ public class Pacman extends Entity {
             int nextX = x, nextY = y;
         if (keyH.upPressed) {
             direction = "up";
+            if (gp.map [y /gp.tileSize][x/gp.tileSize] == 1) y-=speed;
 
         }
         if (keyH.downPressed) {
