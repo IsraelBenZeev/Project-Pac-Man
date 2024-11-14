@@ -17,9 +17,14 @@ public class KeyHandler implements KeyListener {
         switch (code) {
             case KeyEvent.VK_UP:
                 upPressed = true;
+
                 downPressed = leftPressed = rightPressed = false;
 //                System.out.println("up");
                 break;
+//            case KeyEvent.VK_UP + KeyEvent.VK_RIGHT:
+//                upPressed = rightPressed = true;
+//                downPressed = leftPressed = false;
+//                break;
             case KeyEvent.VK_DOWN:
                 downPressed = true;
                 upPressed = leftPressed = rightPressed = false;
@@ -31,9 +36,9 @@ public class KeyHandler implements KeyListener {
 //                System.out.println("left");
                 break;
             case KeyEvent.VK_RIGHT:
+                rightPressed = true;
                 upPressed = downPressed = leftPressed = false;
 //                System.out.println("right");
-                rightPressed = true;
                 break;
             case KeyEvent.VK_ENTER:
                 upPressed = downPressed = leftPressed = rightPressed = false;
@@ -44,7 +49,7 @@ public class KeyHandler implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //        int code = e.getKeyCode();
+//                int code = e.getKeyCode();
 //        if (downPressed || leftPressed || rightPressed){
 //            upPressed = false;
 //        }
@@ -71,6 +76,6 @@ public class KeyHandler implements KeyListener {
 //                rightPressed = false;
 //                break;
 //        }
-
+//
     }
 }

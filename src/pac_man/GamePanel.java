@@ -79,7 +79,11 @@ public class GamePanel extends JPanel implements Runnable {
         double drawInterval = 1000000000 /FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
         while (gameThread != null) {
-            update();
+            try {
+                update();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             repaint();
             try {
                 double remainingTime = nextDrawTime - System.nanoTime();
@@ -94,7 +98,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void update(){
+    public void update() throws InterruptedException {
         pacman.update();
     }
 

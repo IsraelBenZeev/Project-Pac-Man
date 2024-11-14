@@ -7,6 +7,7 @@ public class Entity {
     int x;
     int y;
     int speed;
+    int numOnMap;
     BufferedImage image;
     BufferedImage up1,up2,down1,down2,left1,left2,right1,right2;
     GamePanel gp;

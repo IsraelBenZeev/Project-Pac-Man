@@ -5,17 +5,16 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Coins extends Entity {
+public class Coins extends Entity implements MyFunctions{
 
-    final int size = 32;
-    int coinSize= size/2;
-    BufferedImage image;
-    GamePanel gp;
+    int coinSize= titleSize/2;
 
     public Coins(GamePanel gp) {
         this.gp = gp;
         setValues();
     }
+
+    @Override
     public void setValues(){
         try {
             image = ImageIO.read(getClass().getResourceAsStream("/resource/tiles/coin.png"));
@@ -31,8 +30,8 @@ public class Coins extends Entity {
         for (int i = 0; i < gp.map.length; i++) {
             for (int j = 0; j < gp.map[i].length; j++) {
                 if (gp.map[i][j] == 1){
-                    int x = j * size + 8;//+ (size - coinSize) / 2;  // מרכוז אופקי
-                    int y = i * size + 8;//+ (size - coinSize) / 2;  // מרכוז אנכי
+                    int x = j * titleSize + 8;//+ (size - coinSize) / 2;  // מרכוז אופקי
+                    int y = i * titleSize + 8;//+ (size - coinSize) / 2;  // מרכוז אנכי
                     g2.drawImage(image,x,y,coinSize,coinSize,null);
                 }
             }
