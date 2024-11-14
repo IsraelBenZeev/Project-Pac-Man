@@ -17,7 +17,7 @@ public class Wall extends Entity {
     }
     {
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/resource/tiles/tile.png"));
+            image = ImageIO.read(getClass().getResourceAsStream("/resource/tiles/wall.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

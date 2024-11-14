@@ -7,7 +7,6 @@ import java.io.IOException;
 
 public class Pacman extends Entity {
     final int size = 32;
-//    public GamePanel gp;
     public KeyHandler keyH;
     int currentY;
     int currentX;
@@ -19,9 +18,9 @@ public class Pacman extends Entity {
     }
 
     public void setDefaultValues() {
+        y = 128;
         x = 32;
-        y = 32;
-        speed = 4;
+        speed = 2;
         direction = "down";
     }
 
@@ -40,27 +39,38 @@ public class Pacman extends Entity {
         }
     }
 
-    public static boolean isTile(int num, int[][] arr, int y, int x) {
-        return x > 0 && y > 0 && x < 16 && y < 12 && arr[y][x] == num;
+    public boolean pastAble (String direction,int y, int x, int [][] arr){
+        switch (direction){
+            case "up":
+                return isUp(y, x,arr);
+            case "down":
+                return isDown(y, x,arr);
+            case "left":
+                return isLeft(y, x,arr);
+            case "right":
+                return isRight(y, x,arr);
+        }
+    return false;
     }
 
     public void update() {
             int num = 1;
             int nextX = x, nextY = y;
-        if (keyH.upPressed) {
             direction = "up";
-            if (gp.map [y /gp.tileSize][x/gp.tileSize] == 1) y-=speed;
-
+        if (keyH.upPressed) {
+            if (pastAble(direction,y,x,gp.map)) y -= speed;
         }
         if (keyH.downPressed) {
             direction = "down";
-
+            if (pastAble(direction,y,x,gp.map)) y += speed;
         }
         if (keyH.leftPressed) {
-
-        }
+            direction = "left";
+            if (pastAble(direction,y,x,gp.map)) x -= speed;
+ }
         if (keyH.rightPressed) {
             direction = "right";
+            if (pastAble(direction,y,x,gp.map)) x += speed;
         }
         spriteCounter++;
         if (spriteCounter > 11) {
@@ -93,5 +103,75 @@ public class Pacman extends Entity {
         }
         g2.drawImage(image, x, y, titleSize, titleSize, null);
     }
+    public boolean isUp (int y, int x, int [][] arr){
+        System.out.println("this: x: " + x + ", " + "y: " + y);
+        int y1, x1 = 0, x2 = 0;
+        if ((y-speed) % titleSize != 0){
+            y1 = (y - speed) / titleSize;
+        }
+        else y1 = (y - speed) / titleSize;
+        if (x % titleSize != 0){
+            System.out.println("נכנס ל IF");
+            x1 = x / titleSize +1;
+            x2 = x / titleSize;
+            return arr[y1][x1] == 1 && arr[y1][x2] == 1;
+        }
+        else x1 = x / titleSize;
+        System.out.println("X & Y of function:\nx: " + y1 + ", " + "y: " + x1);
+        return  arr[y1][x1] == 1;
+    }
+
+    public boolean isLeft(int y, int x, int [][] arr){
+        System.out.println("this: x: " + x + ", " + "y: " + y);
+        int y1 = 0,y2,x1 = 0;
+        if ((x - speed) % titleSize != 0){
+            System.out.println("נכנס ל IF");
+            x1 = (x-speed) / titleSize;
+        }
+        else x1 = (x-speed) / titleSize;
+        if (y % titleSize != 0){
+            System.out.println("נכנס ל IF השני");
+            y1 = y / titleSize;
+            y2 = y / titleSize +1;
+            return arr[y1][x1] == 1 && arr[y2][x1] == 1;
+        }
+        else  y1 = (y-speed) / titleSize+1;
+        System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
+        return x1 != -1  && arr[y1][x1] == 1;
+    }
+    public boolean isDown (int y, int x, int[][] arr){
+        int y1, x1 = 0, x2 = 0;
+        if ((y + speed)% titleSize != 0) {
+            y1 = (y + speed) / titleSize + 1;
+        }
+        else y1 = (y + speed)/ titleSize;
+        if (x % titleSize != 0){
+            x1 = x / titleSize;
+            x2 = x / titleSize +1;
+            return arr[y1][x1] ==1 && arr [y1][x2] == 1;
+        }
+        else x1 = x / titleSize;
+        return arr[y1][x1] == 1;
+    }
+    public boolean isRight(int y, int x, int [][] arr){
+        int y1 = 0,y2,x1 = 0;
+        System.out.println("x: " + x + ", " + "y: " + y);
+        if ((x + speed) % titleSize != 0){
+            System.out.println("נכנס ל IF");
+            x1 = (x + speed) / titleSize +1;
+        }
+        else x1 = (x + speed) / titleSize;
+//        System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
+        if (y % titleSize != 0){
+            System.out.println("נכנס ל IF השני");
+            y1 = y / titleSize;
+            y2 = y / titleSize +1;
+        System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
+            return  arr[y1][x1] ==1 && arr [y2][x1] == 1;
+        }
+        else y1 = y / titleSize;
+        return x1 < gp.map[y1].length &&  arr[y1][x1] ==1;
+    }
+
 }
 
