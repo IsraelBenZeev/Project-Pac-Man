@@ -9,15 +9,11 @@ public class Pacman extends Entity implements MyFunctions {
     int pacmanSize = titleSize - 8;
     public KeyHandler keyH;
     int numOnMap = 1;
-    int numOnMap2 = 3;
     boolean up, down, right, left;
-//    Coins coins = new Coins();
-
 
     public Pacman(KeyHandler keyH, GamePanel gp) {
         this.keyH = keyH;
         this.gp = gp;
-//        this.coins = coins;
         setValues();
     }
 
@@ -58,27 +54,26 @@ public class Pacman extends Entity implements MyFunctions {
         }
         return false;
     }
-//    public void updateDirection (String directionF){
-//        if (directionF.equals("up") && y % titleSize ==0 && pastAble("up",y,x,gp.map,numOnMap)){
-//
-//        }
-//    }
 
-    public void update() throws InterruptedException {
+    boolean b = false;
+    public void update() {
         if (keyH.upPressed) {
             direction = "up";
+            b = true;
 //             up = true;
 //             down = false;
             if (pastAble(direction,y,x,gp.map, numOnMap)) y -= speed;
         }
         if (keyH.downPressed) {
             direction = "down";
+            b = true;
 //            down = true;
 //            up = false;
             if (pastAble(direction,y,x,gp.map, numOnMap)) y += speed;
         }
         if (keyH.leftPressed) {
             direction = "left";
+            b = true;
 //            left = true;
 //            right = false;
             if (pastAble(direction,y,x,gp.map, numOnMap)) x -= speed;
@@ -88,6 +83,7 @@ public class Pacman extends Entity implements MyFunctions {
         }
         if (keyH.rightPressed) {
             direction = "right";
+            b = true;
 //            right = true;
 //            left = false;
             if (pastAble(direction,y,x,gp.map, numOnMap)) x += speed;
@@ -95,7 +91,7 @@ public class Pacman extends Entity implements MyFunctions {
                 x = titleSize;
             }
         }
-        if (keyH.enterPressed) up = down = right = left = false;
+        if (keyH.enterPressed) b = up = down = right = left = false;
         spriteCounter++;
         if (spriteCounter > 11) {
             if (spriteNum == 1) spriteNum = 2;
@@ -127,12 +123,6 @@ public class Pacman extends Entity implements MyFunctions {
         g2.drawImage(image, x + 6, y + 6, pacmanSize, pacmanSize, null);
         xCoins = x / titleSize;
         yCoins = y / titleSize;
-    }
-    public  void print(){
-//        System.out.println("xCoins: "+xCoins);
-//        System.out.println("yCoins: "+yCoins);
-
-
     }
 
     public boolean isUp(int y, int x, int[][] arr, int num) {

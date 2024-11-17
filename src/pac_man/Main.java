@@ -24,7 +24,7 @@ public class Main {
 
 
         gamePanel.setGameThread();
-        System.out.println(gamePanel.coins.counter);
+//        System.out.println(gamePanel.coins.counter);
     }
 }
 
