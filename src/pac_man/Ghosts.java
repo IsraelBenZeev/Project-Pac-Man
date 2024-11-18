@@ -5,58 +5,106 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
 
 public class Ghosts extends Entity implements MyFunctions {
-    final int size = 32;
-    BufferedImage green, pink, red, blue, orange;
-
-//    Ghosts[] ghosts = new Ghosts[5];
     KeyHandler keyH;
     int numOnMap = 1;
-    int counterX, counterY;
-    boolean isMainGhost;
+//    BufferedImage blueUp, blueDown, BlueLeft, blueRight;
+//    BufferedImage pinkUp, pinkDown, pinkLeft, pinkRight;
+//    BufferedImage orangeUp, orangeDown, orangeLeft, orangeRight;
+//    BufferedImage redUp, redDown, redLeft, redRight;
+    BufferedImage up, down, left, right;
 
 
-    public Ghosts(GamePanel gp, KeyHandler keyH) {
+    public Ghosts(GamePanel gp, KeyHandler keyH, int x, int y, int speed,
+                  BufferedImage up, BufferedImage down, BufferedImage left, BufferedImage right) throws IOException {
         this.gp = gp;
         this.keyH = keyH;
-//        this.isMainGhost = true;
+        this.x = x;
+        this.y = y;
+        this.speed = speed;
+        this.up = up;
+        this.down = down;
+        this.left = left;
+        this.right = right;
+
+
         setValues();
     }
 
-//    public Ghosts(GamePanel gp, KeyHandler keyH) {
-//        this.gp = gp;
-//        this.keyH = keyH;
-//        this.isMainGhost = false; // זוהי רוח משנית
-//    }
-    public void setValues() {
-        x = 256;
-        y = 256;
-        speed = 4;
-        try {
-//            for(int i = 0; i < ghosts.length; i++) {
-//                ghosts[i] = new Ghosts(gp, keyH);
-//            }
-            blue = ImageIO.read(getClass().getResourceAsStream("/resource/ghosts/Ghost_blue.jpg"));
-//            ghosts[1].image = ImageIO.read(getClass().getResourceAsStream("/resource/ghosts/Ghost_green.jpg"));
-//            ghosts[2].image = ImageIO.read(getClass().getResourceAsStream("/resource/ghosts/Ghost_orange.jpg"));
-//            ghosts[3].image = ImageIO.read(getClass().getResourceAsStream("/resource/ghosts/Ghost_pink.jpg"));
-//            ghosts[4].image = ImageIO.read(getClass().getResourceAsStream("/resource/ghosts/Ghost_red.jpg"));
-//            ghosts[0].x = 8 * titleSize;
-//            ghosts[1].x = 9 * titleSize;
-//            ghosts[2].x = 10 * titleSize;
-//            ghosts[3].x = 11 * titleSize;
-//            ghosts[4].x = 12 * titleSize;
-//
-//            ghosts[0].y = 8 * titleSize;
-//            ghosts[1].y = 8 * titleSize;
-//            ghosts[2].y = 8 * titleSize;
-//            ghosts[3].y = 8 * titleSize;
-//            ghosts[4].y = 8 * titleSize;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void setValues() throws IOException {
+//        String blueUp = GamePanel.fullPath("Blue_up.png");
+//        String blueDown = GamePanel.fullPath("blue_down.png");
+//        String blueLeft = GamePanel.fullPath("blue_left.png");
+//        String blueRight = GamePanel.fullPath("blue_right.png");
+//        up = ImageIO.read(getClass().getResourceAsStream(blueUp));
+//        down = ImageIO.read(getClass().getResourceAsStream(blueDown));
+//        left = ImageIO.read(getClass().getResourceAsStream(blueLeft));
+//        right = ImageIO.read(getClass().getResourceAsStream(blueRight));
+        direction = "up";
+    }
+
+
+
+
+
+    @Override
+    public void update() {
+        moveRandom();
+
+    }
+
+    public void moveRandom (){
+        String[] directions = {"up", "down", "left", "right"};
+        Random r = new Random();
+        int ran = r.nextInt(35);
+        if (ran == 0) {
+            int index = r.nextInt(4);
+            this.direction = directions[index];
+        }
+        if (direction.equals("up") && pastAble(direction,y,x, gp.map, numOnMap)){
+            y -= speed;
+        }
+        else if (direction.equals("down") && pastAble(direction,y,x, gp.map, numOnMap)){
+            y += speed;
+        }
+        else if (direction.equals("left") && pastAble(direction,y,x, gp.map, numOnMap)){
+            x -= speed;
+        }
+        else if (direction.equals("right") && pastAble(direction,y,x, gp.map, numOnMap)){
+            x += speed;
+        }
+        else{
+            int move = r.nextInt(4);
+            direction = directions[move];
         }
     }
+
+    @Override
+    public void draw(Graphics2D g2) {
+        if (direction.equals("up")) image = up;
+        if (direction.equals("down")) image = down;
+        if (direction.equals("left")) image = left;
+        if (direction.equals("right")) image = right;
+
+        g2.drawImage(image,x,y,titleSize,titleSize,null);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public boolean pastAble(String direction, int y, int x, int[][] arr, int num) {
         switch (direction) {
             case "up":
@@ -69,58 +117,6 @@ public class Ghosts extends Entity implements MyFunctions {
                 return isRight(y, x, arr, num);
         }
         return false;
-    }
-
-    @Override
-    public void update() throws InterruptedException {
-        System.out.println("X: "+x+", Y: " + y);
-        //        for (int i = 0; i < gp.map.length; i++) {
-//            for (int j = 0; j < gp.map[i].length; j++) {
-//                if (gp.map[i][j] == 2){
-//                    int x = j * size;
-//                    int y = i * size;
-//        if (keyH.downPressed || keyH.upPressed ||
-//                keyH.leftPressed || keyH.rightPressed) {
-//            counterX++;
-//            counterY++;
-//        }
-        //&& ghosts != null && ghosts[0] != null
-        boolean bol = false;
-        bol = pastAble("up",y,x, gp.map, numOnMap);
-        System.out.println("up: "+bol);
-        if (bol){
-            y -= speed;
-        }
-        else if (pastAble("down",y,x, gp.map, numOnMap)){
-            System.out.println("down: "+bol);
-//            if (bol)
-                y += speed;
-        }
-        else if((pastAble("left",y,x, gp.map, numOnMap))) {
-            System.out.println("left: " + bol);
-//        if (bol)
-            x -= speed;
-        }
-         else if ((pastAble("right",y,x, gp.map, numOnMap))){
-        System.out.println("right: "+bol);
-//        if (bol)
-            x += speed;
-            }
-    }
-
-    @Override
-    public void draw(Graphics2D g2) {
-//        System.out.println("X: "+ghosts[3].x+", Y: "+ghosts[3].y);
-//        for (int i = 0; i < gp.map.length; i++) {
-//            for (int j = 0; j < gp.map[i].length; j++) {
-//                if (gp.map[i][j] == 2){
-//                    int x = j * size;
-//                    int y = i * size;
-        g2.drawImage(blue, x, y, titleSize, titleSize, null);
-//        g2.drawImage(ghosts[1].image, ghosts[1].x, ghosts[1].y, titleSize, titleSize, null);
-//        g2.drawImage(ghosts[2].image, ghosts[2].x, ghosts[2].y, titleSize, titleSize, null);
-//        g2.drawImage(ghosts[3].image, ghosts[3].x, ghosts[3].y, titleSize, titleSize, null);
-//        g2.drawImage(ghosts[4].image, ghosts[4].x, ghosts[4].y, titleSize, titleSize, null);
     }
 
     public boolean isUp(int y, int x, int[][] arr, int num) {

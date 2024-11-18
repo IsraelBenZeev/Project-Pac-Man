@@ -1,3 +1,6 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+
 public class Blank {
 
 //    public void update() {
@@ -59,3 +62,19 @@ public class Blank {
 //
 //    }
 }
+
+
+//String colorBlue = "Ghost_blue.jpg";
+//String colorPink = "Ghost_pink.jpg";
+//String colorGreen = "Ghost_green.jpg";
+//String colorOrange = "Ghost_orange.jpg";
+//String colorRed = "Ghost_red.jpg";
+//BufferedImage blue = ImageIO.read(getClass().getResourceAsStream(fullPath(colorBlue)));
+//BufferedImage pink = ImageIO.read(getClass().getResourceAsStream(fullPath(colorPink)));
+//BufferedImage green = ImageIO.read(getClass().getResourceAsStream(fullPath(colorGreen)));
+//BufferedImage orange = ImageIO.read(getClass().getResourceAsStream(fullPath(colorOrange)));
+//BufferedImage red = ImageIO.read(getClass().getResourceAsStream(fullPath(colorRed)));
+//
+//public String fullPath(String p) {
+//    return "/resource/ghosts/Ghost_blue/" + p;
+//}

@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Pacman extends Entity implements MyFunctions {
-    int pacmanSize = titleSize - 8;
+    //int pacmanSize = titleSize - 8;
     public KeyHandler keyH;
     int numOnMap = 1;
     boolean up, down, right, left;
@@ -55,43 +55,36 @@ public class Pacman extends Entity implements MyFunctions {
         return false;
     }
 
-    boolean b = false;
     public void update() {
-        if (keyH.upPressed) {
+        boolean bol =
+                keyH.upPressed && !pastAble("up", y, x, gp.map, numOnMap) ||
+                keyH.downPressed && !pastAble("down", y, x, gp.map, numOnMap) ||
+                keyH.leftPressed && !pastAble("left", y, x, gp.map, numOnMap) ||
+                keyH.rightPressed && !pastAble("right", y, x, gp.map, numOnMap);
+
+        if ((keyH.upPressed || bol && direction.equals("up")) && pastAble("up", y, x, gp.map, numOnMap)) {
             direction = "up";
-            b = true;
-//             up = true;
-//             down = false;
-            if (pastAble(direction,y,x,gp.map, numOnMap)) y -= speed;
+            y -= speed;
         }
-        if (keyH.downPressed) {
+        if ((keyH.downPressed || bol && direction.equals("down")) && pastAble("down", y, x, gp.map, numOnMap)) {
             direction = "down";
-            b = true;
-//            down = true;
-//            up = false;
-            if (pastAble(direction,y,x,gp.map, numOnMap)) y += speed;
+            y += speed;
         }
-        if (keyH.leftPressed) {
+        if ((keyH.leftPressed || bol && direction.equals("left")) && pastAble("left", y, x, gp.map, numOnMap)) {
             direction = "left";
-            b = true;
-//            left = true;
-//            right = false;
-            if (pastAble(direction,y,x,gp.map, numOnMap)) x -= speed;
+            x -= speed;
             if (x < 32) {
                 x = (gp.map.length - 1) * titleSize;
             }
         }
-        if (keyH.rightPressed) {
+        if ((keyH.rightPressed || bol && direction.equals("right")) && pastAble("right", y, x, gp.map, numOnMap)) {
             direction = "right";
-            b = true;
-//            right = true;
-//            left = false;
-            if (pastAble(direction,y,x,gp.map, numOnMap)) x += speed;
+            x += speed;
             if (x == (gp.map.length - 1) * 32) {
                 x = titleSize;
             }
         }
-        if (keyH.enterPressed) b = up = down = right = left = false;
+        if (keyH.enterPressed) up = down = right = left = false;
         spriteCounter++;
         if (spriteCounter > 11) {
             if (spriteNum == 1) spriteNum = 2;
@@ -120,7 +113,7 @@ public class Pacman extends Entity implements MyFunctions {
                 if (spriteNum == 2) image = right2;
                 break;
         }
-        g2.drawImage(image, x + 6, y + 6, pacmanSize, pacmanSize, null);
+        g2.drawImage(image, x, y, titleSize, titleSize, null);
         xCoins = x / titleSize;
         yCoins = y / titleSize;
     }
