@@ -4,16 +4,19 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Pacman extends Entity implements MyFunctions {
     //int pacmanSize = titleSize - 8;
     public KeyHandler keyH;
     int numOnMap = 1;
     boolean up, down, right, left;
+    ArrayList<Ghosts> ghosts;
 
-    public Pacman(KeyHandler keyH, GamePanel gp) {
+    public Pacman(KeyHandler keyH, GamePanel gp, ArrayList<Ghosts> ghosts) {
         this.keyH = keyH;
         this.gp = gp;
+        this.ghosts = ghosts;
         setValues();
     }
 
@@ -39,6 +42,19 @@ public class Pacman extends Entity implements MyFunctions {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean ghostsEndPacmanCollision() {
+        boolean b= false;
+        for (Ghosts ghost : this.ghosts) {
+            int num = 28;
+            if ((this.x + num == ghost.x && this.y == ghost.y) || (this.x - num == ghost.x && this.y == ghost.y)
+                    || (this.x  == ghost.x && this.y + num == ghost.y) || (this.x == ghost.x && this.y- num ==  ghost.y)
+                    || ( (this.x == ghost.x && this.y == ghost.y))){
+                b = true;
+            }
+        }
+        return b;
     }
 
     public boolean pastAble(String direction, int y, int x, int[][] arr, int num) {

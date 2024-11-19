@@ -49,6 +49,8 @@ public class Ghosts extends Entity implements MyFunctions {
 
 
 
+
+
     @Override
     public void update() {
         moveRandom();

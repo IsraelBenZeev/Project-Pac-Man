@@ -20,16 +20,16 @@ public class Coins extends Entity implements MyFunctions {
             {3, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 4}, //1
             {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2}, //2
             {2, 1, 5, 9, 6, 1, 9, 9, 9, 1, 9, 1, 9, 9, 9, 1, 5, 9, 1, 2, 1, 2}, //3
-            {2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2}, //4
+            {2, 1, 2, 15, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2}, //4
             {2, 1, 3, 9, 4, 1, 2, 1, 9, 9, 10, 9, 9, 1, 2, 1, 2, 1, 9, 8, 1, 2}, //5
             {2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2}, //6
             {2, 1, 1, 1, 1, 1, 3, 9, 9, 1, 2, 1, 9, 9, 4, 1, 5, 9, 6, 1, 1, 2}, //7
             {3, 9, 9, 9, 6, 1, 2, 1, 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 7, 9, 9, 4}, //8
             {2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2}, //9
             {7, 9, 9, 1, 2, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 2, 1, 1, 9, 9, 8}, //10
-            {1, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, //11
+            {1, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 15}, //11
             {5, 9, 9, 9, 6, 1, 2, 1, 9, 9, 6, 1, 9, 9, 9, 1, 2, 1, 5, 9, 9, 6}, //12
-            {2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1}, //13
+            {2, 15, 15, 15, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 15, 15, 2}, //13
             {3, 9, 9, 9, 8, 1, 7, 9, 9, 1, 2, 1, 5, 9, 9, 9, 8, 1, 7, 9, 9, 6}, //14
             {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2}, //15
             {2, 1, 9, 9, 6, 1, 9, 9, 9, 1, 1, 1, 2, 1, 9, 9, 9, 9, 9, 9, 1, 2}, //16
@@ -71,8 +71,6 @@ public class Coins extends Entity implements MyFunctions {
     public void update() {
     }
 
-
-
     public void draw(Graphics2D g2) {
         setEating();
         boolean bol = false;
@@ -82,14 +80,13 @@ public class Coins extends Entity implements MyFunctions {
                         int x = j * titleSize + 12;//+ (size - coinSize) / 2;  // מרכוז אופקי
                         int y = i * titleSize + 12;//+ (size - coinSize) / 2;  // מרכוז אנכי
                     g2.drawImage(image, x, y, coinSize, coinSize, null);
-//                    g2.drawImage(background, xCoins+5, yCoins+5, coinSize, coinSize, null);
                 }
             }
         }
-
         g2.setColor(new Color(250,145,16));
-        g2.setFont(new Font("Segoe UI", Font.BOLD, 20));
-//        g2.setFont(new Font("Verdana", Font.BOLD, 20));
-        g2.drawString("Score: " + counter, titleSize*18+10, 45); // מציג את הניקוד בפינה השמאלית העליונה
+//        g2.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        g2.setFont(new Font("Verdana", Font.BOLD, 25));
+        g2.drawString("Score: " + counter, titleSize*17+10, 45);
+
     }
 }
