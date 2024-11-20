@@ -3,7 +3,7 @@ package pac_man;
 import java.awt.image.BufferedImage;
 
 public class Entity {
-    final int titleSize = 32;
+     int titleSize = 32;
     int x;
     int y;
     int speed;

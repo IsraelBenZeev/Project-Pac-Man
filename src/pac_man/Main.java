@@ -7,24 +7,52 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class Main {
-    public static void openGame() throws IOException {
-        JFrame window = new JFrame();
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setResizable(false);
-        window.setTitle("Pac - Man");
-        BufferedImage imageIcon = ImageIO.read(Main.class.getResourceAsStream("/resource/pacman/right_1.png"));
-        window.setIconImage(imageIcon);
-        window.setVisible(true);
-        window.setLayout(new BorderLayout());
+    public static void openGame(JFrame menu) throws IOException {
+//        JFrame window = new JFrame();
+//        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        window.setResizable(false);
+//        window.setTitle("Pac - Man");
+//        BufferedImage imageIcon = ImageIO.read(Main.class.getResourceAsStream("/resource/pacman/right_1.png"));
+//        window.setIconImage(imageIcon);
+//        window.setVisible(true);
+//        window.setLayout(new BorderLayout());
 
         GamePanel gamePanel = new GamePanel();
-        window.add(gamePanel, BorderLayout.CENTER);
-        window.add(gamePanel);
-        window.pack();
+        menu.setContentPane(gamePanel);
+        menu.revalidate();
+        menu.repaint();
+
+        gamePanel.requestFocusInWindow();
+        gamePanel.setFocusable(true);
+        gamePanel.grabFocus();
+        menu.setSize(menu.getWidth() + 16, menu.getHeight() + 39);
+
+
+//        JPanel gameOver = gamePanel;
+//        JPanel menuPanel = new JPanel();
+//        menuPanel.setLayout(null);
+//        menuPanel.setBounds(32*8, 32*8,  32*8, 32 * 22);
+//        menuPanel.setBackground(new Color(49, 99, 99, 246));
+//        menu.add(menuPanel);
+//
+//        if (gamePanel.counterG == 3){
+//            menu.setContentPane(gameOver);
+//            menu.revalidate();
+//            menu.repaint();
+//
+//            gameOver.requestFocusInWindow();
+//            gameOver.setFocusable(true);
+//            gameOver.grabFocus();
+//
+//        }
+
+//        window.add(gamePanel, BorderLayout.CENTER);
+//        window.add(gamePanel);
+//        window.pack();
+
         gamePanel.setGameThread();
 
     }
@@ -66,8 +94,9 @@ public class Main {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        menu.dispose();
-                        openGame();
+//                        menu.dispose();
+//                        openGame();
+                        openGame(menu);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }

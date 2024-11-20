@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class Pacman extends Entity implements MyFunctions {
     //int pacmanSize = titleSize - 8;
@@ -47,11 +48,12 @@ public class Pacman extends Entity implements MyFunctions {
     public boolean ghostsEndPacmanCollision() {
         boolean b= false;
         for (Ghosts ghost : this.ghosts) {
-            int num = 28;
+            int num = gp.pacman.titleSize-gp.pacman.speed;
             if ((this.x + num == ghost.x && this.y == ghost.y) || (this.x - num == ghost.x && this.y == ghost.y)
                     || (this.x  == ghost.x && this.y + num == ghost.y) || (this.x == ghost.x && this.y- num ==  ghost.y)
                     || ( (this.x == ghost.x && this.y == ghost.y))){
                 b = true;
+                keyH.upPressed = keyH.downPressed = keyH.leftPressed = keyH.rightPressed = false;
             }
         }
         return b;
@@ -77,7 +79,7 @@ public class Pacman extends Entity implements MyFunctions {
                 keyH.downPressed && !pastAble("down", y, x, gp.map, numOnMap) ||
                 keyH.leftPressed && !pastAble("left", y, x, gp.map, numOnMap) ||
                 keyH.rightPressed && !pastAble("right", y, x, gp.map, numOnMap);
-
+        System.out.println("PACMAN.   x: " + x + ", " + "y: " + y);
         if ((keyH.upPressed || bol && direction.equals("up")) && pastAble("up", y, x, gp.map, numOnMap)) {
             direction = "up";
             y -= speed;

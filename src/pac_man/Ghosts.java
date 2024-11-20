@@ -5,11 +5,17 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 public class Ghosts extends Entity implements MyFunctions {
     KeyHandler keyH;
+    public void size (){
+        this.titleSize = 32;
+    }
     int numOnMap = 1;
+    Random random = new Random();
 //    BufferedImage blueUp, blueDown, BlueLeft, blueRight;
 //    BufferedImage pinkUp, pinkDown, pinkLeft, pinkRight;
 //    BufferedImage orangeUp, orangeDown, orangeLeft, orangeRight;
@@ -17,64 +23,66 @@ public class Ghosts extends Entity implements MyFunctions {
     BufferedImage up, down, left, right;
 
 
-    public Ghosts(GamePanel gp, KeyHandler keyH, int x, int y, int speed,
+    public Ghosts(GamePanel gp, KeyHandler keyH, int x, int y,
                   BufferedImage up, BufferedImage down, BufferedImage left, BufferedImage right) throws IOException {
         this.gp = gp;
         this.keyH = keyH;
         this.x = x;
         this.y = y;
-        this.speed = speed;
+//        this.speed = speed;
         this.up = up;
         this.down = down;
         this.left = left;
         this.right = right;
-
-
+        this.speed = 2;
+//        size();
         setValues();
     }
 
     public void setValues() throws IOException {
-//        String blueUp = GamePanel.fullPath("Blue_up.png");
-//        String blueDown = GamePanel.fullPath("blue_down.png");
-//        String blueLeft = GamePanel.fullPath("blue_left.png");
-//        String blueRight = GamePanel.fullPath("blue_right.png");
-//        up = ImageIO.read(getClass().getResourceAsStream(blueUp));
-//        down = ImageIO.read(getClass().getResourceAsStream(blueDown));
-//        left = ImageIO.read(getClass().getResourceAsStream(blueLeft));
-//        right = ImageIO.read(getClass().getResourceAsStream(blueRight));
         direction = "up";
     }
 
 
-
-
-
-
-
     @Override
     public void update() {
-        moveRandom();
-
+//        gp.ghosts.get(0).chasePacmanBFS(gp.pacman);
+        for (Ghosts ghosts  : gp.ghosts) {
+            ghosts.moveRandom();
+        }
+//        int chase = 0;
+//        int change = random.nextInt(35);
+//        if (change == 0) {
+//            chase = random.nextInt(gp.ghosts.size());
+//        }
+//        for (int i = 0; i < gp.ghosts.size(); i++) {//מעדכן את מיקום המפלצות
+//            if (i == chase) {
+//                gp.ghosts.get(i).chasePacman(gp.pacman);
+//            } else {
+//                gp.ghosts.get(i).moveRandom();
+//            }
+//        }
+//        moveRandom();
     }
 
     public void moveRandom (){
         String[] directions = {"up", "down", "left", "right"};
         Random r = new Random();
-        int ran = r.nextInt(35);
-        if (ran == 0) {
-            int index = r.nextInt(4);
-            this.direction = directions[index];
-        }
-        if (direction.equals("up") && pastAble(direction,y,x, gp.map, numOnMap)){
+//        int ran = r.nextInt(35);
+//        if (ran == 0) {
+//            int index = r.nextInt(4);
+//            this.direction = directions[index];
+//        }
+        if ( direction.equals("up") && pastAble(direction,y,x, gp.map, numOnMap)){
             y -= speed;
         }
-        else if (direction.equals("down") && pastAble(direction,y,x, gp.map, numOnMap)){
+        else if ( direction.equals("down") && pastAble(direction,y,x, gp.map, numOnMap)){
             y += speed;
         }
-        else if (direction.equals("left") && pastAble(direction,y,x, gp.map, numOnMap)){
+        else if ( direction.equals("left") && pastAble(direction,y,x, gp.map, numOnMap)){
             x -= speed;
         }
-        else if (direction.equals("right") && pastAble(direction,y,x, gp.map, numOnMap)){
+        else if ( direction.equals("right") && pastAble(direction,y,x, gp.map, numOnMap)){
             x += speed;
         }
         else{
@@ -82,6 +90,95 @@ public class Ghosts extends Entity implements MyFunctions {
             direction = directions[move];
         }
     }
+    public void chasePacmanBFS(Pacman pacman) {
+        // המפה
+        int mapHeight = gp.map.length;  // מספר השורות במפה
+        int mapWidth = gp.map[0].length;  // מספר העמודות במפה
+
+        // רשימות עבור BFS
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[mapHeight][mapWidth];
+
+        // מיקום ההתחלה (מיקום המפלצת)
+        int startX = this.x;
+        int startY = this.y;
+
+        // הוספת המיקום ההתחלתי לתור
+        queue.offer(new int[] {startX, startY});
+        visited[startY][startX] = true;
+
+        // כיוונים אפשריים (מעלה, למטה, שמאלה, ימינה)
+        int[] directionsX = {0, 0, -1, 1}; // שמאל / ימין
+        int[] directionsY = {-1, 1, 0, 0}; // למעלה / למטה
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int currentX = current[0];
+            int currentY = current[1];
+
+            // אם הגענו לפקמן, עצור
+            if (currentX == pacman.x && currentY == pacman.y) {
+                break;
+            }
+
+            // עבור כל כיוון אפשרי
+            for (int i = 0; i < 4; i++) {
+                int newX = currentX + directionsX[i];
+                int newY = currentY + directionsY[i];
+
+                // בדוק אם המיקום החדש בתווך המפה
+                if (newX >= 0 && newX < mapWidth && newY >= 0 && newY < mapHeight) {
+                    // בדוק אם לא ביקרנו במיקום הזה ואם הוא לא חסום (0)
+                    if (!visited[newY][newX] && gp.map[newY][newX] != 0) {
+                        // הוסף את המיקום החדש לתור
+                        queue.offer(new int[] {newX, newY});
+                        visited[newY][newX] = true;
+                    }
+                }
+            }
+        }
+
+        // אם מצאנו את הפקמן, עדכן את המיקום של המפלצת
+        if (visited[pacman.y][pacman.x]) {
+            moveInDirection(pacman.x, pacman.y); // עדכון המפלצת לפי מיקום פקמן
+        }
+    }
+
+
+    public void moveInDirection(int targetX, int targetY) {
+        int deltaX = targetX - this.x;
+        int deltaY = targetY - this.y;
+
+        // התאם את כיוון המפלצת לפקמן
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX > 0) {
+                direction = "right";
+            } else {
+                direction = "left";
+            }
+        } else {
+            if (deltaY > 0) {
+                direction = "down";
+            } else {
+                direction = "up";
+            }
+        }
+
+        // לאחר שהכיוונים התעדכנו, תזוזה במפה
+        if (direction.equals("up") && pastAble(direction, y, x, gp.map, numOnMap)) {
+            y -= speed;
+        } else if (direction.equals("down") && pastAble(direction, y, x, gp.map, numOnMap)) {
+            y += speed;
+        } else if (direction.equals("left") && pastAble(direction, y, x, gp.map, numOnMap)) {
+            x -= speed;
+        } else if (direction.equals("right") && pastAble(direction, y, x, gp.map, numOnMap)) {
+            x += speed;
+        }
+    }
+
+
+
+
 
     @Override
     public void draw(Graphics2D g2) {
@@ -91,8 +188,15 @@ public class Ghosts extends Entity implements MyFunctions {
         if (direction.equals("right")) image = right;
 
         g2.drawImage(image,x,y,titleSize,titleSize,null);
-
     }
+
+
+
+
+
+
+
+
 
 
 
