@@ -16,12 +16,7 @@ public class Ghosts extends Entity implements MyFunctions {
     }
     int numOnMap = 1;
     Random random = new Random();
-//    BufferedImage blueUp, blueDown, BlueLeft, blueRight;
-//    BufferedImage pinkUp, pinkDown, pinkLeft, pinkRight;
-//    BufferedImage orangeUp, orangeDown, orangeLeft, orangeRight;
-//    BufferedImage redUp, redDown, redLeft, redRight;
     BufferedImage up, down, left, right;
-
 
     public Ghosts(GamePanel gp, KeyHandler keyH, int x, int y,
                   BufferedImage up, BufferedImage down, BufferedImage left, BufferedImage right) throws IOException {
@@ -29,13 +24,11 @@ public class Ghosts extends Entity implements MyFunctions {
         this.keyH = keyH;
         this.x = x;
         this.y = y;
-//        this.speed = speed;
         this.up = up;
         this.down = down;
         this.left = left;
         this.right = right;
         this.speed = 2;
-//        size();
         setValues();
     }
 
@@ -43,10 +36,8 @@ public class Ghosts extends Entity implements MyFunctions {
         direction = "up";
     }
 
-
     @Override
     public void update() {
-//        gp.ghosts.get(0).chasePacmanBFS(gp.pacman);
         for (Ghosts ghosts  : gp.ghosts) {
             ghosts.moveRandom();
         }
@@ -62,7 +53,6 @@ public class Ghosts extends Entity implements MyFunctions {
 //                gp.ghosts.get(i).moveRandom();
 //            }
 //        }
-//        moveRandom();
     }
 
     public void moveRandom (){
@@ -143,6 +133,7 @@ public class Ghosts extends Entity implements MyFunctions {
             moveInDirection(pacman.x, pacman.y); // עדכון המפלצת לפי מיקום פקמן
         }
     }
+
 
 
     public void moveInDirection(int targetX, int targetY) {

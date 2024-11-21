@@ -4,10 +4,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class GamePanel extends JPanel implements Runnable {
     public final int tileSize = 32;
@@ -16,10 +17,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol;//768
     public final int screenHeight = tileSize * maxScreenRow;//576
     final int FPS = 60;
-    int counterG = 0;
+    static int lives = 3;
 
-    int counter = 0;
-    public final int[][] map = {
+    public int[][] map = {
             //0///1///2//3////4///5///6///7///8///9//10//11//12//13//14//15//16//17//18//19//20//21
             {5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 6}, //0
             {3, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 4}, //1
@@ -53,6 +53,8 @@ public class GamePanel extends JPanel implements Runnable {
     BufferedImage pinkUp, pinkDown, pinkLeft, pinkRight;
     BufferedImage orangeUp, orangeDown, orangeLeft, orangeRight;
     BufferedImage redUp, redDown, redLeft, redRight;
+    BufferedImage greenUp, greenDown, greenLeft, greenRight;
+    BufferedImage eat = ImageIO.read(getClass().getResourceAsStream(fullPath("eat.png")));
     BufferedImage start, pacmanTXT;
     Pacman pacman = new Pacman(keyH, this, ghosts);
     Coins coins = new Coins(this, pacman);
@@ -81,16 +83,16 @@ public class GamePanel extends JPanel implements Runnable {
         redDown = ImageIO.read(getClass().getResourceAsStream(fullPath("red_down.png")));
         redLeft = ImageIO.read(getClass().getResourceAsStream(fullPath("red_left.png")));
         redRight = ImageIO.read(getClass().getResourceAsStream(fullPath("red_right.png")));
-    }
 
+        greenUp = ImageIO.read(getClass().getResourceAsStream(fullPath("green_up.png")));
+        greenDown = ImageIO.read(getClass().getResourceAsStream(fullPath("green_down.png")));
+        greenLeft = ImageIO.read(getClass().getResourceAsStream(fullPath("green_left.png")));
+        greenRight = ImageIO.read(getClass().getResourceAsStream(fullPath("green_right.png")));
+    }
     public static String fullPath(String p) {
         return "/resource/ghosts/" + p;
     }
-     public void setWall (Graphics g){
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        wall.draw(g2);
-    }
+
     public GamePanel() throws IOException {
 //        int speed = 4;
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -104,16 +106,17 @@ public class GamePanel extends JPanel implements Runnable {
 
         Ghosts b = new Ghosts(this, keyH, tileSize * 8, tileSize * 8, blueUp, blueDown, blueLeft, blueRight);
         Ghosts p = new Ghosts(this, keyH, tileSize * 9, tileSize * 8, pinkUp, pinkDown, pinkLeft, pinkRight);
-        Ghosts g = new Ghosts(this, keyH, tileSize * 10, tileSize * 8, blueUp, blueDown, blueLeft, blueRight);
         Ghosts o = new Ghosts(this, keyH, tileSize * 11, tileSize * 8, orangeUp, orangeDown, orangeLeft, orangeRight);
         Ghosts r = new Ghosts(this, keyH, tileSize * 12, tileSize * 8, redUp, redDown, redLeft, redRight);
+        Ghosts g = new Ghosts(this, keyH, tileSize * 10, tileSize * 8, greenUp, greenDown, greenLeft, greenRight);
 
         ghosts.add(b);
         ghosts.add(p);
-        ghosts.add(g);
         ghosts.add(o);
         ghosts.add(r);
+        ghosts.add(g);
     }
+
     Thread gameThread;
 
     public void setGameThread() throws IOException {
@@ -123,14 +126,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-//        playAgain();
-        System.out.println("pacman x: " + pacman.x + ", " + "pacman y: " + pacman.y);
         double drawInterval = 1000000000 / FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
-        while (gameThread != null && counterG <= 3) {
+        while (gameThread != null && lives > 0) {
             try {
                 update();
             } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             repaint();
@@ -147,85 +150,121 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void update() throws InterruptedException {
+
+
+    public void update() throws InterruptedException, IOException {
+        System.out.println();
         pacman.update();
-//        for (Ghosts ghost : ghosts) {
-//            ghost.update();
-//        }
-        ghosts.get(0).update();
-        boolean bol = pacman.ghostsEndPacmanCollision();
-        if (bol){
-            pacman.x = pacman.titleSize*3;
-            pacman.y = pacman.titleSize*11;
-            counterG++;
+        if (!Pacman.canEat) {
+            updateImages();
+        } else {
+            for (int i = 0; i < ghosts.size(); i++) {
+                ghosts.get(i).up = eat;
+                ghosts.get(i).down = eat;
+                ghosts.get(i).left = eat;
+                ghosts.get(i).right = eat;
+            }
         }
+        ghosts.get(0).update();
+//        if (lives == 0) playAgain();
     }
 
+    public void updateImages(){
+        ghosts.get(0).up = blueUp;
+        ghosts.get(0).down = blueDown;
+        ghosts.get(0).left = blueLeft;
+        ghosts.get(0).right = blueRight;
+
+        ghosts.get(1).up = pinkUp;
+        ghosts.get(1).down = pinkDown;
+        ghosts.get(1).left = pinkLeft;
+        ghosts.get(1).right = pinkRight;
+
+        ghosts.get(2).up = orangeUp;
+        ghosts.get(2).down = orangeDown;
+        ghosts.get(2).left = orangeLeft;
+        ghosts.get(2).right = orangeRight;
+
+        ghosts.get(3).up = redUp;
+        ghosts.get(3).down = redDown;
+        ghosts.get(3).left = redLeft;
+        ghosts.get(3).right = redRight;
+
+        ghosts.get(4).up = greenUp;
+        ghosts.get(4).down = greenDown;
+        ghosts.get(4).left = greenLeft;
+        ghosts.get(4).right = greenRight;
+    }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         pacman.draw(g2);
-//        wall.draw(g2);
+        wall.draw(g2);
         coins.draw(g2);
         g2.drawImage(start, 0, 11 * tileSize, tileSize + 4, tileSize + 4, null);
         g2.drawImage(pacman.right1, 30, 10, tileSize + 15, tileSize + 15, null);
         g2.drawImage(pacmanTXT, 80, 20, 130, 35, null);
         int xLeft = 16;
-        for (int i = 0; i < 3 - counterG; i++) {
-            g2.drawImage(pacman.left1, tileSize * (xLeft - i), 30, tileSize - 10, tileSize - 10, null);
+        for (int i = 0; i < lives; i++) {
+            g2.drawImage(pacman.left1, tileSize * (xLeft - i)-20, 27, tileSize - 10, tileSize - 10, null);
         }
         for (Ghosts ghost : ghosts) {
             ghost.draw(g2);
         }
-        boolean bol = pacman.ghostsEndPacmanCollision();
-        if (bol) counterG++;
-        if (counterG == 4) {
-
+        if (lives == 0) {
             g2.setFont(new Font("Verdana", Font.BOLD, 40));
             g2.drawString("game over", tileSize * 7 - 8, tileSize * 8);
-            new javax.swing.Timer(60000, e -> {
-                counterG = 0; // איפוס או שינוי מצב המשחק
-                repaint(); // עדכון המסך
-            }).start();
-
         }
-
         g2.dispose();
-//        g2.drawString("game over",tileSize*8,tileSize*8);
     }
 
-    public void playAgain (){
-        JButton again = new JButton("play again");
-        again.setBackground(Color.GREEN);
-        again.setBounds(100, 110, 250, 120);
-        again.setFont(new Font("Verdana", Font.BOLD, 25));
-        again.setBorder(new LineBorder(Color.BLACK, 8, true));  // קו גבול שחור בעובי 2 פיקסלים עם קצוות מעוגלים
-        again.setFocusPainted(false);  // ביטול צבע הגבול כאשר הכפתור מקבל פוקוס
-        again.setContentAreaFilled(true);
-
-
-        this.add(again);
-        this.revalidate();
-        this.repaint();
-
-    }
-}
-
-
-//public boolean ghostsEndPacmanCollision() {
-//    boolean b= false;
-//    for (Ghosts ghost : ghosts) {
-//        int num =28;
-//        if ((pacman.x + num == ghost.x && pacman.y == ghost.y) || (pacman.x - num == ghost.x && pacman.y == ghost.y)
-//                || (pacman.x  == ghost.x && pacman.y + num == ghost.y) || (pacman.x == ghost.x && pacman.y- num ==  ghost.y)
-//                || ( (pacman.x == ghost.x && pacman.y == ghost.y))){
-//            pacman.x = pacman.titleSize*3;
-//            pacman.y = pacman.titleSize*11;
-//            b = true;
-//        }
+//    public void playAgain() {
+//        // יצירת הכפתור
+//        JButton again = new JButton("Play Again");
+//
+//        // קביעת הגודל של הכפתור - לדוגמה 150x60
+//        again.setPreferredSize(new Dimension(150, 60));
+//
+//        // שינוי צבע הרקע של הכפתור
+//        again.setBackground(Color.GREEN);
+//
+//        // קביעת הגדרת הגופנים של הכפתור
+//        again.setFont(new Font("Verdana", Font.BOLD, 20));
+//
+//        // קביעת גבול שחור עם קצוות מעוגלים
+//        again.setBorder(new LineBorder(Color.BLACK, 8, true));
+//
+//        // ביטול הצגת גבול כשהכפתור מקבל פוקוס
+//        again.setFocusPainted(false);
+//
+//        // שימו לב שהכפתור לא יכסה את כל הפאנל
+//        again.setContentAreaFilled(true);
+//
+//        // חישוב המיקום של הכפתור במרכז הפאנל
+//        int x = 0;// (this.getWidth() - again.getPreferredSize().width) / 2;
+//        int y =0;// (this.getHeight() - again.getPreferredSize().height) / 2;
+//
+//        // הצבת הכפתור במיקום החישוב
+//        again.setBounds(x, y, again.getPreferredSize().width, again.getPreferredSize().height);
+//
+//        // הוספת הכפתור לפאנל
+//        this.add(again);
+//
+//        // עדכון הפאנל כדי שיתעדכן ויתחיל להציג את הכפתור
+//        this.revalidate();
+//        this.repaint();
+//        again.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////                lives = 3;
+////                Coins.score = 0;
+////                Coins.level = 1;
+////                run();
+//            }
+//        });
 //    }
-//    return b;
-//}
+
+}
 
 
