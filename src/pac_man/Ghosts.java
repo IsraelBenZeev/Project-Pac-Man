@@ -58,11 +58,11 @@ public class Ghosts extends Entity implements MyFunctions {
     public void moveRandom (){
         String[] directions = {"up", "down", "left", "right"};
         Random r = new Random();
-//        int ran = r.nextInt(35);
-//        if (ran == 0) {
-//            int index = r.nextInt(4);
-//            this.direction = directions[index];
-//        }
+        int ran = r.nextInt(35);
+        if (ran == 0) {
+            int index = r.nextInt(4);
+            this.direction = directions[index];
+        }
         if ( direction.equals("up") && pastAble(direction,y,x, gp.map, numOnMap)){
             y -= speed;
         }
@@ -80,96 +80,6 @@ public class Ghosts extends Entity implements MyFunctions {
             direction = directions[move];
         }
     }
-    public void chasePacmanBFS(Pacman pacman) {
-        // המפה
-        int mapHeight = gp.map.length;  // מספר השורות במפה
-        int mapWidth = gp.map[0].length;  // מספר העמודות במפה
-
-        // רשימות עבור BFS
-        Queue<int[]> queue = new LinkedList<>();
-        boolean[][] visited = new boolean[mapHeight][mapWidth];
-
-        // מיקום ההתחלה (מיקום המפלצת)
-        int startX = this.x;
-        int startY = this.y;
-
-        // הוספת המיקום ההתחלתי לתור
-        queue.offer(new int[] {startX, startY});
-        visited[startY][startX] = true;
-
-        // כיוונים אפשריים (מעלה, למטה, שמאלה, ימינה)
-        int[] directionsX = {0, 0, -1, 1}; // שמאל / ימין
-        int[] directionsY = {-1, 1, 0, 0}; // למעלה / למטה
-
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
-            int currentX = current[0];
-            int currentY = current[1];
-
-            // אם הגענו לפקמן, עצור
-            if (currentX == pacman.x && currentY == pacman.y) {
-                break;
-            }
-
-            // עבור כל כיוון אפשרי
-            for (int i = 0; i < 4; i++) {
-                int newX = currentX + directionsX[i];
-                int newY = currentY + directionsY[i];
-
-                // בדוק אם המיקום החדש בתווך המפה
-                if (newX >= 0 && newX < mapWidth && newY >= 0 && newY < mapHeight) {
-                    // בדוק אם לא ביקרנו במיקום הזה ואם הוא לא חסום (0)
-                    if (!visited[newY][newX] && gp.map[newY][newX] != 0) {
-                        // הוסף את המיקום החדש לתור
-                        queue.offer(new int[] {newX, newY});
-                        visited[newY][newX] = true;
-                    }
-                }
-            }
-        }
-
-        // אם מצאנו את הפקמן, עדכן את המיקום של המפלצת
-        if (visited[pacman.y][pacman.x]) {
-            moveInDirection(pacman.x, pacman.y); // עדכון המפלצת לפי מיקום פקמן
-        }
-    }
-
-
-
-    public void moveInDirection(int targetX, int targetY) {
-        int deltaX = targetX - this.x;
-        int deltaY = targetY - this.y;
-
-        // התאם את כיוון המפלצת לפקמן
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-                direction = "right";
-            } else {
-                direction = "left";
-            }
-        } else {
-            if (deltaY > 0) {
-                direction = "down";
-            } else {
-                direction = "up";
-            }
-        }
-
-        // לאחר שהכיוונים התעדכנו, תזוזה במפה
-        if (direction.equals("up") && pastAble(direction, y, x, gp.map, numOnMap)) {
-            y -= speed;
-        } else if (direction.equals("down") && pastAble(direction, y, x, gp.map, numOnMap)) {
-            y += speed;
-        } else if (direction.equals("left") && pastAble(direction, y, x, gp.map, numOnMap)) {
-            x -= speed;
-        } else if (direction.equals("right") && pastAble(direction, y, x, gp.map, numOnMap)) {
-            x += speed;
-        }
-    }
-
-
-
-
 
     @Override
     public void draw(Graphics2D g2) {
@@ -180,6 +90,93 @@ public class Ghosts extends Entity implements MyFunctions {
 
         g2.drawImage(image,x,y,titleSize,titleSize,null);
     }
+//    public void chasePacmanBFS(Pacman pacman) {
+//        // המפה
+//        int mapHeight = gp.map.length;  // מספר השורות במפה
+//        int mapWidth = gp.map[0].length;  // מספר העמודות במפה
+//
+//        // רשימות עבור BFS
+//        Queue<int[]> queue = new LinkedList<>();
+//        boolean[][] visited = new boolean[mapHeight][mapWidth];
+//
+//        // מיקום ההתחלה (מיקום המפלצת)
+//        int startX = this.x;
+//        int startY = this.y;
+//
+//        // הוספת המיקום ההתחלתי לתור
+//        queue.offer(new int[] {startX, startY});
+//        visited[startY][startX] = true;
+//
+//        // כיוונים אפשריים (מעלה, למטה, שמאלה, ימינה)
+//        int[] directionsX = {0, 0, -1, 1}; // שמאל / ימין
+//        int[] directionsY = {-1, 1, 0, 0}; // למעלה / למטה
+//
+//        while (!queue.isEmpty()) {
+//            int[] current = queue.poll();
+//            int currentX = current[0];
+//            int currentY = current[1];
+//
+//            // אם הגענו לפקמן, עצור
+//            if (currentX == pacman.x && currentY == pacman.y) {
+//                break;
+//            }
+//
+//            // עבור כל כיוון אפשרי
+//            for (int i = 0; i < 4; i++) {
+//                int newX = currentX + directionsX[i];
+//                int newY = currentY + directionsY[i];
+//
+//                // בדוק אם המיקום החדש בתווך המפה
+//                if (newX >= 0 && newX < mapWidth && newY >= 0 && newY < mapHeight) {
+//                    // בדוק אם לא ביקרנו במיקום הזה ואם הוא לא חסום (0)
+//                    if (!visited[newY][newX] && gp.map[newY][newX] != 0) {
+//                        // הוסף את המיקום החדש לתור
+//                        queue.offer(new int[] {newX, newY});
+//                        visited[newY][newX] = true;
+//                    }
+//                }
+//            }
+//        }
+//
+//        // אם מצאנו את הפקמן, עדכן את המיקום של המפלצת
+//        if (visited[pacman.y][pacman.x]) {
+//            moveInDirection(pacman.x, pacman.y); // עדכון המפלצת לפי מיקום פקמן
+//        }
+//    }
+//
+//
+//
+//    public void moveInDirection(int targetX, int targetY) {
+//        int deltaX = targetX - this.x;
+//        int deltaY = targetY - this.y;
+//
+//        // התאם את כיוון המפלצת לפקמן
+//        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+//            if (deltaX > 0) {
+//                direction = "right";
+//            } else {
+//                direction = "left";
+//            }
+//        } else {
+//            if (deltaY > 0) {
+//                direction = "down";
+//            } else {
+//                direction = "up";
+//            }
+//        }
+//
+//        // לאחר שהכיוונים התעדכנו, תזוזה במפה
+//        if (direction.equals("up") && pastAble(direction, y, x, gp.map, numOnMap)) {
+//            y -= speed;
+//        } else if (direction.equals("down") && pastAble(direction, y, x, gp.map, numOnMap)) {
+//            y += speed;
+//        } else if (direction.equals("left") && pastAble(direction, y, x, gp.map, numOnMap)) {
+//            x -= speed;
+//        } else if (direction.equals("right") && pastAble(direction, y, x, gp.map, numOnMap)) {
+//            x += speed;
+//        }
+//    }
+
 
 
 

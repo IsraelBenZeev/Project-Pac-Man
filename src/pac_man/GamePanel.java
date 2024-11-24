@@ -126,9 +126,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        SoundManager.playStart();
         double drawInterval = 1000000000 / FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
         while (gameThread != null && lives > 0) {
+
             try {
                 update();
             } catch (InterruptedException e) {
@@ -153,7 +155,6 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     public void update() throws InterruptedException, IOException {
-        System.out.println();
         pacman.update();
         if (!Pacman.canEat) {
             updateImages();
@@ -213,6 +214,7 @@ public class GamePanel extends JPanel implements Runnable {
             ghost.draw(g2);
         }
         if (lives == 0) {
+            SoundManager.playDied();
             g2.setFont(new Font("Verdana", Font.BOLD, 40));
             g2.drawString("game over", tileSize * 7 - 8, tileSize * 8);
         }
