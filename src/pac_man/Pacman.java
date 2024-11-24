@@ -30,6 +30,8 @@ public class Pacman extends Entity implements MyFunctions {
         speed = 4;
         direction = "right";
         setImagePacman();
+//        SoundManager.loadSound("eating", "C:\\Users\\i0548\\Downloads\\Pack-Man\\sound\\pacman_eating.wav");
+
     }
 
     public void setImagePacman() {
@@ -59,10 +61,12 @@ public class Pacman extends Entity implements MyFunctions {
                 collision = true;
                 if (!canEat) {
                 keyH.upPressed = keyH.downPressed = keyH.leftPressed = keyH.rightPressed = false;
+                SoundManager.playDied();
                     x = titleSize * 3;
                     y = titleSize * 11;
                     GamePanel.lives--;
                 } else {
+                    SoundManager.playEatCoin();
                     ghost.x = titleSize * 10;
                     ghost.y = titleSize * 8;
                     Coins.score += 30;
@@ -70,6 +74,10 @@ public class Pacman extends Entity implements MyFunctions {
             }
             else collision = false;
         }
+    }
+
+    public void StartPoint(){
+        if (x == titleSize && y == titleSize * 11 ) SoundManager.playDied();
     }
 
     public boolean pastAble(String direction, int y, int x, int[][] arr, int num) {
@@ -87,46 +95,52 @@ public class Pacman extends Entity implements MyFunctions {
     }
 
     public void update() {
-        boolean bol =
+
+        boolean block =
                 keyH.upPressed && !pastAble("up", y, x, gp.map, numOnMap) ||
                 keyH.downPressed && !pastAble("down", y, x, gp.map, numOnMap) ||
                 keyH.leftPressed && !pastAble("left", y, x, gp.map, numOnMap) ||
                 keyH.rightPressed && !pastAble("right", y, x, gp.map, numOnMap);
-        if ((keyH.upPressed || bol && direction.equals("up")) && pastAble("up", y, x, gp.map, numOnMap)) {
+        if ((keyH.upPressed || block && direction.equals("up")) && pastAble("up", y, x, gp.map, numOnMap)) {
             direction = "up";
             y -= speed;
         }
-        if ((keyH.downPressed || bol && direction.equals("down")) && pastAble("down", y, x, gp.map, numOnMap)) {
+        if ((keyH.downPressed || block && direction.equals("down")) && pastAble("down", y, x, gp.map, numOnMap)) {
             direction = "down";
             y += speed;
         }
-        if ((keyH.leftPressed || bol && direction.equals("left")) && pastAble("left", y, x, gp.map, numOnMap)) {
+        if ((keyH.leftPressed || block && direction.equals("left")) && pastAble("left", y, x, gp.map, numOnMap)) {
             direction = "left";
             x -= speed;
             if (x < 32) {
                 x = (gp.map.length - 1) * titleSize;
             }
         }
-        if ((keyH.rightPressed || bol && direction.equals("right")) && pastAble("right", y, x, gp.map, numOnMap)) {
+        if ((keyH.rightPressed || block && direction.equals("right")) && pastAble("right", y, x, gp.map, numOnMap)) {
             direction = "right";
             x += speed;
             if (x == (gp.map.length - 1) * 32) {
                 x = titleSize;
             }
         }
-
+        boolean play = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
+        if (play) SoundManager.playEat();
         ghostsEndPacmanCollision();
         if (timer > 0) timer --;
         else canEat = false;
 
-
-        if (keyH.enterPressed) up = down = right = left = false;
+//
+//        if (keyH.enterPressed){
+//            SoundManager.stopSound("eating");
+//            up = down = right = left = false;
+//        }
         spriteCounter++;
         if (spriteCounter > 11) {
             if (spriteNum == 1) spriteNum = 2;
             else if (spriteNum == 2) spriteNum = 1;
             spriteCounter = 0;
         }
+//        StartPoint();
 
     }
 

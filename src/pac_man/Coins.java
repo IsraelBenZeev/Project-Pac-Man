@@ -10,7 +10,7 @@ public class Coins extends Entity implements MyFunctions {
     int coinSize = titleSize / 4;
     BufferedImage start;
     BufferedImage background;
-    static int score = -1;
+    static int score = 0;
     static int level = 1;
     Pacman pacman;
     BigCoin bigCoin = new BigCoin();
@@ -29,7 +29,7 @@ public class Coins extends Entity implements MyFunctions {
             {3, 9, 9, 9, 6, 1, 2, 1, 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 7, 9, 9, 4}, //8
             {2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2}, //9
             {7, 9, 9, 1, 2, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 2, 1, 1, 9, 9, 8}, //10
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 1, 1, 1, 1, 1, 1, 1, 1, 18, 1}, //11
+            {1, 19, 1, 1, 1, 1, 1, 1, 1, 1, 1, 14, 1, 1, 1, 1, 1, 1, 1, 1, 18, 19}, //11
             {5, 9, 9, 9, 6, 1, 2, 1, 9, 9, 6, 1, 9, 9, 9, 1, 2, 1, 5, 9, 9, 6}, //12
             {2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1}, //13
             {3, 9, 9, 9, 8, 1, 7, 9, 9, 1, 2, 1, 5, 9, 9, 9, 8, 1, 7, 9, 9, 6}, //14
@@ -77,6 +77,7 @@ public class Coins extends Entity implements MyFunctions {
             else if ((eating[pacman.yCoins][pacman.xCoins] >= 14) &&
             (eating[pacman.yCoins][pacman.xCoins] <= 18)) {
                 score += 20;
+                SoundManager.playEatCoin();
                 pacman.canEat = true;
                 pacman.timer = 300;
             }
@@ -92,13 +93,16 @@ public class Coins extends Entity implements MyFunctions {
         this.pacman = pacman;
         setValues();
     }
+    public String fullPath (String p){
+        return "/resource/tiles/"+p+".png";
+    }
 
     @Override
     public void setValues() {
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/resource/tiles/coinsGold.png"));
-            start = ImageIO.read(getClass().getResourceAsStream("/resource/tiles/start.png"));
-            background = ImageIO.read(getClass().getResourceAsStream("/resource/tiles/רקע.png"));
+            image = ImageIO.read(getClass().getResourceAsStream(fullPath("coinsGold")));
+            start = ImageIO.read(getClass().getResourceAsStream(fullPath("start")));
+            background = ImageIO.read(getClass().getResourceAsStream(fullPath("רקע")));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -114,10 +118,11 @@ public class Coins extends Entity implements MyFunctions {
     }
 
     public void update() {
+        if (level == 2) SoundManager.playNextLevel();
     }
 
     public void draw(Graphics2D g2) {
-        if (score >= 100) {
+        if (score >= 250) {
             nextLevel();
         }
         setEating();
