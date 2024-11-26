@@ -10,6 +10,10 @@ public class SoundManager {
     private static Clip eatCoinClip;
     private static Clip nextLevelClip;
 
+    public static String fullPath(String p) {
+        return "src/resource/sound/" + p + ".wav";
+    }
+
     static {
         try {
             AudioInputStream eatStream = AudioSystem.getAudioInputStream(new File(fullPath("eating")));
@@ -35,9 +39,7 @@ public class SoundManager {
             e.printStackTrace();
         }
     }
-    public static String fullPath(String p) {
-        return "src/resource/sound/" + p + ".wav";
-    }
+
 
     public static void playEat() {
         if (eatClip != null && !eatClip.isRunning()) {

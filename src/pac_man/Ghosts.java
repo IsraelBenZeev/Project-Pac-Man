@@ -11,9 +11,11 @@ import java.util.Random;
 
 public class Ghosts extends Entity implements MyFunctions {
     KeyHandler keyH;
-    public void size (){
+
+    public void size() {
         this.titleSize = 32;
     }
+
     int numOnMap = 1;
     Random random = new Random();
     BufferedImage up, down, left, right;
@@ -38,24 +40,142 @@ public class Ghosts extends Entity implements MyFunctions {
 
     @Override
     public void update() {
-        for (Ghosts ghosts  : gp.ghosts) {
-            ghosts.moveRandom();
-        }
-//        int chase = 0;
-//        int change = random.nextInt(35);
-//        if (change == 0) {
-//            chase = random.nextInt(gp.ghosts.size());
-//        }
-//        for (int i = 0; i < gp.ghosts.size(); i++) {//מעדכן את מיקום המפלצות
-//            if (i == chase) {
+        if (Pacman.play) {
+            int chase = 0;
+            int change = random.nextInt(18);
+            if (change == 0) {
+                chase = random.nextInt(gp.ghosts.size());
+            }
+            for (int i = 0; i < gp.ghosts.size(); i++) {//מעדכן את מיקום המפלצות
+                if (i == chase) {
+                    gp.ghosts.get(i).chasePacman(gp.pacman);
 //                gp.ghosts.get(i).chasePacman(gp.pacman);
-//            } else {
-//                gp.ghosts.get(i).moveRandom();
-//            }
-//        }
+                } else {
+                    gp.ghosts.get(i).moveRandom();
+                }
+            }
+        }
+
     }
 
-    public void moveRandom (){
+    public void chasePacman(Pacman pacman) {
+        // קביעת כיוון בהתאם למיקום פקמן
+        if (pacman.x < this.x && pastAble("left", y, x, Board.map, numOnMap)) {
+            direction = "left";
+            x -= speed;
+        } else if (pacman.x > this.x && pastAble("right", y, x, Board.map, numOnMap)) {
+            direction = "right";
+            x += speed;
+        } else if (pacman.y < this.y && pastAble("up", y, x, Board.map, numOnMap)) {
+            direction = "up";
+            y -= speed;
+        } else if (pacman.y > this.y && pastAble("down", y, x, Board.map, numOnMap)) {
+            direction = "down";
+            y += speed;
+        }
+
+    }
+    public void afterGhost(Pacman pacman){
+        int pX = pacman.x;
+        int pY = pacman.y;
+
+        if (pX < x){
+            if (pastAble("left",y,x,Board.map,numOnMap)) x-=speed;
+
+        }
+
+        else if (pX >x)
+            if (pastAble("right",y,x,Board.map,numOnMap)) x+=speed;
+        if (pY < y)
+            if (pastAble("up",y,x,Board.map,numOnMap))y -= speed;
+
+        else if (pY > y)
+                if (pastAble("down",y,x,Board.map,numOnMap))y += speed;
+
+    }
+
+    public void chasePacmanAdvanced(Pacman pacman) {
+        int[][] map = Board.map;
+        boolean[][] visited = new boolean[map.length][map[0].length];
+        Queue<Point> queue = new LinkedList<>();
+        Point[][] parent = new Point[map.length][map[0].length];
+
+        int startX = x / titleSize;
+        int startY = y / titleSize;
+        int targetX = pacman.x / titleSize;
+        int targetY = pacman.y / titleSize;
+
+        queue.offer(new Point(startX, startY));
+        visited[startY][startX] = true;
+
+        int[] dx = {0, 0, -1, 1};
+        int[] dy = {-1, 1, 0, 0};
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+
+            if (current.x == targetX && current.y == targetY) {
+                // מצא את הצעד הראשון במסלול
+                Point nextStep = backtrackFirstStep(parent, startX, startY, targetX, targetY);
+                moveToNextStep(nextStep);
+                break;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                int newX = current.x + dx[i];
+                int newY = current.y + dy[i];
+
+                if (isValidMove(newX, newY, map) && !visited[newY][newX]) {
+                    queue.offer(new Point(newX, newY));
+                    visited[newY][newX] = true;
+                    parent[newY][newX] = current;
+                }
+            }
+        }
+    }
+
+    private Point backtrackFirstStep(Point[][] parent, int startX, int startY, int targetX, int targetY) {
+        Point current = new Point(targetX, targetY);
+        Point prev = null;
+
+        while (current.x != startX || current.y != startY) {
+            prev = current;
+            current = parent[current.y][current.x];
+        }
+
+        return prev;
+    }
+
+    private void moveToNextStep(Point nextStep) {
+        int newX = nextStep.x * titleSize;
+        int newY = nextStep.y * titleSize;
+
+        if (newX < x) direction = "left";
+        else if (newX > x) direction = "right";
+        else if (newY < y) direction = "up";
+        else if (newY > y) direction = "down";
+
+        x = newX;
+        y = newY;
+    }
+
+    private boolean isValidMove(int x, int y, int[][] map) {
+        return x >= 0 && x < map[0].length &&
+                y >= 0 && y < map.length &&
+                map[y][x] == 1;  // בדיקה שהמיקום פנוי
+    }
+
+    public void QueueGhost() {
+        if (Pacman.collision) {
+            Queue<Ghosts> q = new LinkedList<>();
+            for (Ghosts ghosts : gp.ghosts) {
+                q.offer(ghosts);
+            }
+            System.out.println(q);
+        }
+    }
+
+    public void moveRandom() {
         String[] directions = {"up", "down", "left", "right"};
         Random r = new Random();
         int ran = r.nextInt(35);
@@ -63,19 +183,15 @@ public class Ghosts extends Entity implements MyFunctions {
             int index = r.nextInt(4);
             this.direction = directions[index];
         }
-        if ( direction.equals("up") && pastAble(direction,y,x, gp.map, numOnMap)){
+        if (direction.equals("up") && pastAble(direction, y, x, Board.map, numOnMap)) {
             y -= speed;
-        }
-        else if ( direction.equals("down") && pastAble(direction,y,x, gp.map, numOnMap)){
+        } else if (direction.equals("down") && pastAble(direction, y, x, Board.map, numOnMap)) {
             y += speed;
-        }
-        else if ( direction.equals("left") && pastAble(direction,y,x, gp.map, numOnMap)){
+        } else if (direction.equals("left") && pastAble(direction, y, x, Board.map, numOnMap)) {
             x -= speed;
-        }
-        else if ( direction.equals("right") && pastAble(direction,y,x, gp.map, numOnMap)){
+        } else if (direction.equals("right") && pastAble(direction, y, x, Board.map, numOnMap)) {
             x += speed;
-        }
-        else{
+        } else {
             int move = r.nextInt(4);
             direction = directions[move];
         }
@@ -88,115 +204,8 @@ public class Ghosts extends Entity implements MyFunctions {
         if (direction.equals("left")) image = left;
         if (direction.equals("right")) image = right;
 
-        g2.drawImage(image,x,y,titleSize,titleSize,null);
+        g2.drawImage(image, x, y, titleSize, titleSize, null);
     }
-//    public void chasePacmanBFS(Pacman pacman) {
-//        // המפה
-//        int mapHeight = gp.map.length;  // מספר השורות במפה
-//        int mapWidth = gp.map[0].length;  // מספר העמודות במפה
-//
-//        // רשימות עבור BFS
-//        Queue<int[]> queue = new LinkedList<>();
-//        boolean[][] visited = new boolean[mapHeight][mapWidth];
-//
-//        // מיקום ההתחלה (מיקום המפלצת)
-//        int startX = this.x;
-//        int startY = this.y;
-//
-//        // הוספת המיקום ההתחלתי לתור
-//        queue.offer(new int[] {startX, startY});
-//        visited[startY][startX] = true;
-//
-//        // כיוונים אפשריים (מעלה, למטה, שמאלה, ימינה)
-//        int[] directionsX = {0, 0, -1, 1}; // שמאל / ימין
-//        int[] directionsY = {-1, 1, 0, 0}; // למעלה / למטה
-//
-//        while (!queue.isEmpty()) {
-//            int[] current = queue.poll();
-//            int currentX = current[0];
-//            int currentY = current[1];
-//
-//            // אם הגענו לפקמן, עצור
-//            if (currentX == pacman.x && currentY == pacman.y) {
-//                break;
-//            }
-//
-//            // עבור כל כיוון אפשרי
-//            for (int i = 0; i < 4; i++) {
-//                int newX = currentX + directionsX[i];
-//                int newY = currentY + directionsY[i];
-//
-//                // בדוק אם המיקום החדש בתווך המפה
-//                if (newX >= 0 && newX < mapWidth && newY >= 0 && newY < mapHeight) {
-//                    // בדוק אם לא ביקרנו במיקום הזה ואם הוא לא חסום (0)
-//                    if (!visited[newY][newX] && gp.map[newY][newX] != 0) {
-//                        // הוסף את המיקום החדש לתור
-//                        queue.offer(new int[] {newX, newY});
-//                        visited[newY][newX] = true;
-//                    }
-//                }
-//            }
-//        }
-//
-//        // אם מצאנו את הפקמן, עדכן את המיקום של המפלצת
-//        if (visited[pacman.y][pacman.x]) {
-//            moveInDirection(pacman.x, pacman.y); // עדכון המפלצת לפי מיקום פקמן
-//        }
-//    }
-//
-//
-//
-//    public void moveInDirection(int targetX, int targetY) {
-//        int deltaX = targetX - this.x;
-//        int deltaY = targetY - this.y;
-//
-//        // התאם את כיוון המפלצת לפקמן
-//        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-//            if (deltaX > 0) {
-//                direction = "right";
-//            } else {
-//                direction = "left";
-//            }
-//        } else {
-//            if (deltaY > 0) {
-//                direction = "down";
-//            } else {
-//                direction = "up";
-//            }
-//        }
-//
-//        // לאחר שהכיוונים התעדכנו, תזוזה במפה
-//        if (direction.equals("up") && pastAble(direction, y, x, gp.map, numOnMap)) {
-//            y -= speed;
-//        } else if (direction.equals("down") && pastAble(direction, y, x, gp.map, numOnMap)) {
-//            y += speed;
-//        } else if (direction.equals("left") && pastAble(direction, y, x, gp.map, numOnMap)) {
-//            x -= speed;
-//        } else if (direction.equals("right") && pastAble(direction, y, x, gp.map, numOnMap)) {
-//            x += speed;
-//        }
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public boolean pastAble(String direction, int y, int x, int[][] arr, int num) {
@@ -266,7 +275,7 @@ public class Ghosts extends Entity implements MyFunctions {
 //            System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
             return arr[y1][x1] == num && arr[y2][x1] == num;
         } else y1 = y / titleSize;
-        return x1 < gp.map[y1].length && arr[y1][x1] == num;
+        return x1 < Board.map[y1].length && arr[y1][x1] == num;
     }
 }
 //        }

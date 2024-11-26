@@ -45,9 +45,9 @@ public class Wall extends Entity implements MyFunctions {
     }
 
     public void draw(Graphics2D g2) {
-        for (int i = 0; i < gp.map.length; i++) {
-            for (int j = 0; j < gp.map[i].length; j++) {
-                switch (gp.map[i][j]){
+        for (int i = 0; i < Board.map.length; i++) {
+            for (int j = 0; j < Board.map[i].length; j++) {
+                switch (Board.map[i][j]){
                     case 2:
                     x = j * titleSize;
                     y = i * titleSize;

@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class GamePanel extends JPanel implements Runnable {
     public final int tileSize = 32;
@@ -18,32 +20,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenHeight = tileSize * maxScreenRow;//576
     final int FPS = 60;
     static int lives = 3;
-
-    public int[][] map = {
-            //0///1///2//3////4///5///6///7///8///9//10//11//12//13//14//15//16//17//18//19//20//21
-            {5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 6}, //0
-            {3, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 4}, //1
-            {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2}, //2
-            {2, 1, 5, 9, 6, 1, 9, 9, 9, 1, 9, 1, 9, 9, 9, 1, 5, 9, 1, 2, 1, 2}, //3
-            {2, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2}, //4
-            {2, 1, 3, 9, 4, 1, 2, 1, 9, 9, 10, 9, 9, 1, 2, 1, 2, 1, 9, 8, 1, 2}, //5
-            {2, 1, 2, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 2}, //6
-            {2, 1, 1, 1, 1, 1, 3, 9, 9, 1, 2, 1, 9, 9, 4, 1, 5, 9, 6, 1, 1, 2}, //7
-            {3, 9, 9, 9, 6, 1, 2, 1, 0, 0, 0, 0, 0, 1, 2, 1, 2, 1, 7, 9, 9, 4}, //8
-            {2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2}, //9
-            {7, 9, 9, 1, 2, 1, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 2, 1, 1, 9, 9, 8}, //10
-            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, //11
-            {5, 9, 9, 9, 6, 1, 2, 1, 9, 9, 6, 1, 9, 9, 9, 1, 2, 1, 5, 9, 9, 6}, //12
-            {2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1}, //13
-            {3, 9, 9, 9, 8, 1, 7, 9, 9, 1, 2, 1, 5, 9, 9, 9, 8, 1, 7, 9, 9, 6}, //14
-            {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2}, //15
-            {2, 1, 9, 9, 6, 1, 9, 9, 9, 1, 1, 1, 2, 1, 9, 9, 9, 9, 9, 9, 1, 2}, //16
-            {2, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2}, //17
-            {2, 1, 2, 1, 1, 1, 1, 2, 1, 1, 9, 10, 9, 9, 1, 1, 2, 1, 1, 1, 1, 2}, //18
-            {2, 1, 7, 9, 1, 9, 9, 11, 9, 1, 1, 2, 1, 1, 1, 9, 11, 9, 9, 9, 1, 2}, //19
-            {2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2}, //20
-            {7, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8}  //21
-    };
+    static boolean run = true;
 
     KeyHandler keyH = new KeyHandler();
     Wall wall = new Wall(this);
@@ -129,7 +106,7 @@ public class GamePanel extends JPanel implements Runnable {
         SoundManager.playStart();
         double drawInterval = 1000000000 / FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
-        while (gameThread != null && lives > 0) {
+        while (gameThread != null) {
 
             try {
                 update();
@@ -154,6 +131,13 @@ public class GamePanel extends JPanel implements Runnable {
 
 
 
+    public void  endGame(){
+        if (lives == 0 ){
+            run = false;
+            keyH.upPressed = keyH.downPressed = keyH.leftPressed = keyH.rightPressed = false;
+        }
+    }
+
     public void update() throws InterruptedException, IOException {
         pacman.update();
         if (!Pacman.canEat) {
@@ -166,8 +150,9 @@ public class GamePanel extends JPanel implements Runnable {
                 ghosts.get(i).right = eat;
             }
         }
-        ghosts.get(0).update();
-//        if (lives == 0) playAgain();
+        ghosts.get(1).update();
+        if (lives <= 0) playAgain();
+        endGame();
     }
 
     public void updateImages(){
@@ -200,8 +185,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        pacman.draw(g2);
         wall.draw(g2);
+        pacman.draw(g2);
         coins.draw(g2);
         g2.drawImage(start, 0, 11 * tileSize, tileSize + 4, tileSize + 4, null);
         g2.drawImage(pacman.right1, 30, 10, tileSize + 15, tileSize + 15, null);
@@ -217,55 +202,53 @@ public class GamePanel extends JPanel implements Runnable {
             SoundManager.playDied();
             g2.setFont(new Font("Verdana", Font.BOLD, 40));
             g2.drawString("game over", tileSize * 7 - 8, tileSize * 8);
+
         }
         g2.dispose();
     }
 
-//    public void playAgain() {
-//        // יצירת הכפתור
-//        JButton again = new JButton("Play Again");
-//
-//        // קביעת הגודל של הכפתור - לדוגמה 150x60
-//        again.setPreferredSize(new Dimension(150, 60));
-//
-//        // שינוי צבע הרקע של הכפתור
-//        again.setBackground(Color.GREEN);
-//
-//        // קביעת הגדרת הגופנים של הכפתור
-//        again.setFont(new Font("Verdana", Font.BOLD, 20));
-//
-//        // קביעת גבול שחור עם קצוות מעוגלים
-//        again.setBorder(new LineBorder(Color.BLACK, 8, true));
-//
-//        // ביטול הצגת גבול כשהכפתור מקבל פוקוס
-//        again.setFocusPainted(false);
-//
-//        // שימו לב שהכפתור לא יכסה את כל הפאנל
-//        again.setContentAreaFilled(true);
-//
-//        // חישוב המיקום של הכפתור במרכז הפאנל
-//        int x = 0;// (this.getWidth() - again.getPreferredSize().width) / 2;
-//        int y =0;// (this.getHeight() - again.getPreferredSize().height) / 2;
-//
-//        // הצבת הכפתור במיקום החישוב
-//        again.setBounds(x, y, again.getPreferredSize().width, again.getPreferredSize().height);
-//
-//        // הוספת הכפתור לפאנל
-//        this.add(again);
-//
-//        // עדכון הפאנל כדי שיתעדכן ויתחיל להציג את הכפתור
-//        this.revalidate();
-//        this.repaint();
-//        again.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-////                lives = 3;
-////                Coins.score = 0;
-////                Coins.level = 1;
-////                run();
-//            }
-//        });
-//    }
+    public void playAgain() {
+        JButton again = new JButton("Play Again");
+
+        again.setBackground(Color.GREEN);
+        again.setFont(new Font("Verdana", Font.BOLD, 20));
+        again.setBorder(new LineBorder(Color.BLACK, 8, true));
+        again.setFocusPainted(false);
+
+        // וודא שהפאנל מוגדר עם Null Layout
+        this.setLayout(null);
+
+        // חישוב מיקום הכפתור
+        int buttonWidth = 150;
+        int buttonHeight = 100;
+        int x = (this.getWidth() - buttonWidth) / 2;
+        int y = (this.getHeight() - buttonHeight) / 2;
+
+        System.out.println("Panel dimensions: " + this.getWidth() + "x" + this.getHeight());
+        System.out.println("Button position: " + x + ", " + y);
+
+        again.setBounds(x, y, buttonWidth, buttonHeight);
+
+        // הוספת הכפתור
+        this.add(again);
+
+        // רענון
+        this.revalidate();
+        this.repaint();
+
+        again.addActionListener(e -> {
+            lives = 3;
+            Coins.score = 0;
+            Coins.level = 1;
+            try {
+                setGameThread();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+    }
+
 
 }
 

@@ -4,15 +4,14 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class Main {
     public static void openGame(JFrame menu) throws IOException {
-
         GamePanel gamePanel = new GamePanel();
+
         menu.setContentPane(gamePanel);
         menu.revalidate();
         menu.repaint();
@@ -22,8 +21,43 @@ public class Main {
         gamePanel.grabFocus();
         menu.setSize(menu.getWidth() + 16, menu.getHeight() + 39);
 
-
         gamePanel.setGameThread();
+
+
+
+        JButton again = new JButton("Play Again");
+
+        again.setBackground(Color.GREEN);
+        again.setFont(new Font("Verdana", Font.BOLD, 20));
+        again.setBorder(new LineBorder(Color.BLACK, 8, true));
+        again.setFocusPainted(false);
+
+        // וודא שהפאנל מוגדר עם Null Layout
+        gamePanel.setLayout(null);
+
+
+        again.setBounds(0, 0, 150, 100);
+
+        // הוספת הכפתור
+        gamePanel.add(again);
+
+        // רענון
+        gamePanel.revalidate();
+        gamePanel.repaint();
+
+        again.addActionListener(e -> {
+//            lives = 3;
+//            Coins.score = 0;
+//            Coins.level = 1;
+//            try {
+//                setGameThread();
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+        });
+
+
+
 
     }
     public static void menu() throws IOException {

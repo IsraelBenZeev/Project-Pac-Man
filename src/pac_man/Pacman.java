@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Pacman extends Entity implements MyFunctions {
     //int pacmanSize = titleSize - 8;
@@ -15,6 +17,7 @@ public class Pacman extends Entity implements MyFunctions {
     static boolean canEat = false;
     static boolean collision = false;
     int timer = 0;
+    static boolean play = false;
 
     public Pacman(KeyHandler keyH, GamePanel gp, ArrayList<Ghosts> ghosts) {
         this.keyH = keyH;
@@ -51,7 +54,6 @@ public class Pacman extends Entity implements MyFunctions {
 
     public void ghostsEndPacmanCollision() {
         for (Ghosts ghost : ghosts) {
-            // בדיקת התנגשות לפי משבצות
             int playerX = x / titleSize;
             int playerY = y / titleSize;
             int ghostX = ghost.x / titleSize;
@@ -60,24 +62,31 @@ public class Pacman extends Entity implements MyFunctions {
             if (playerX == ghostX && playerY == ghostY) {
                 collision = true;
                 if (!canEat) {
-                keyH.upPressed = keyH.downPressed = keyH.leftPressed = keyH.rightPressed = false;
-                SoundManager.playDied();
+                    keyH.upPressed = keyH.downPressed = keyH.leftPressed = keyH.rightPressed = false;
+                    SoundManager.playDied();
                     x = titleSize * 3;
                     y = titleSize * 11;
+                    int a = 0;
+                    for (Ghosts ghost1 : gp.ghosts) {
+                        ghost1.x = titleSize * 8 + a;
+                        ghost1.y = titleSize * 8;
+                        a += titleSize;
+
+                    }
                     GamePanel.lives--;
                 } else {
                     SoundManager.playEatCoin();
                     ghost.x = titleSize * 10;
                     ghost.y = titleSize * 8;
-                    Coins.score += 30;
+                    Coins.score += 200;
                 }
-            }
-            else collision = false;
+            } else collision = false;
         }
+//        System.out.println("collision: "+collision);
     }
 
-    public void StartPoint(){
-        if (x == titleSize && y == titleSize * 11 ) SoundManager.playDied();
+    public void StartPoint() {
+        if (x == titleSize && y == titleSize * 11) SoundManager.playDied();
     }
 
     public boolean pastAble(String direction, int y, int x, int[][] arr, int num) {
@@ -95,53 +104,49 @@ public class Pacman extends Entity implements MyFunctions {
     }
 
     public void update() {
-
         boolean block =
-                keyH.upPressed && !pastAble("up", y, x, gp.map, numOnMap) ||
-                keyH.downPressed && !pastAble("down", y, x, gp.map, numOnMap) ||
-                keyH.leftPressed && !pastAble("left", y, x, gp.map, numOnMap) ||
-                keyH.rightPressed && !pastAble("right", y, x, gp.map, numOnMap);
-        if ((keyH.upPressed || block && direction.equals("up")) && pastAble("up", y, x, gp.map, numOnMap)) {
+                keyH.upPressed && !pastAble("up", y, x, Board.map, numOnMap) ||
+                        keyH.downPressed && !pastAble("down", y, x, Board.map, numOnMap) ||
+                        keyH.leftPressed && !pastAble("left", y, x, Board.map, numOnMap) ||
+                        keyH.rightPressed && !pastAble("right", y, x, Board.map, numOnMap);
+        if ((keyH.upPressed || block && direction.equals("up")) && pastAble("up", y, x, Board.map, numOnMap)) {
             direction = "up";
             y -= speed;
         }
-        if ((keyH.downPressed || block && direction.equals("down")) && pastAble("down", y, x, gp.map, numOnMap)) {
+        if ((keyH.downPressed || block && direction.equals("down")) && pastAble("down", y, x, Board.map, numOnMap)) {
             direction = "down";
             y += speed;
         }
-        if ((keyH.leftPressed || block && direction.equals("left")) && pastAble("left", y, x, gp.map, numOnMap)) {
+        if ((keyH.leftPressed || block && direction.equals("left")) && pastAble("left", y, x, Board.map, numOnMap)) {
             direction = "left";
             x -= speed;
             if (x < 32) {
-                x = (gp.map.length - 1) * titleSize;
+                x = (Board.map.length - 1) * titleSize;
             }
         }
-        if ((keyH.rightPressed || block && direction.equals("right")) && pastAble("right", y, x, gp.map, numOnMap)) {
+        if ((keyH.rightPressed || block && direction.equals("right")) && pastAble("right", y, x, Board.map, numOnMap)) {
             direction = "right";
             x += speed;
-            if (x == (gp.map.length - 1) * 32) {
+            if (x == (Board.map.length - 1) * 32) {
                 x = titleSize;
             }
         }
-        boolean play = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
+        if (keyH.enterPressed) {
+            up = down = right = left = false;
+        }
+
+        play = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
         if (play) SoundManager.playEat();
         ghostsEndPacmanCollision();
-        if (timer > 0) timer --;
+        if (timer > 0) timer--;
         else canEat = false;
 
-//
-//        if (keyH.enterPressed){
-//            SoundManager.stopSound("eating");
-//            up = down = right = left = false;
-//        }
         spriteCounter++;
         if (spriteCounter > 11) {
             if (spriteNum == 1) spriteNum = 2;
             else if (spriteNum == 2) spriteNum = 1;
             spriteCounter = 0;
         }
-//        StartPoint();
-
     }
 
     public void draw(Graphics2D g2) {
@@ -165,8 +170,6 @@ public class Pacman extends Entity implements MyFunctions {
                 break;
         }
         g2.drawImage(image, x, y, titleSize, titleSize, null);
-        xCoins = x / titleSize;
-        yCoins = y / titleSize;
     }
 
     public boolean isUp(int y, int x, int[][] arr, int num) {
@@ -222,7 +225,7 @@ public class Pacman extends Entity implements MyFunctions {
 //            System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
             return arr[y1][x1] == num && arr[y2][x1] == num;
         } else y1 = y / titleSize;
-        return x1 < gp.map[y1].length && arr[y1][x1] == num;
+        return x1 < Board.map[y1].length && arr[y1][x1] == num;
     }
 
 }
