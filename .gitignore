@@ -27,3 +27,5 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/src/pac_man/GamePanel.zip
+/src.zip
