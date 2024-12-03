@@ -4,21 +4,17 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 
 public class Ghosts extends Entity implements MyFunctions {
     KeyHandler keyH;
-
-    public void size() {
-        this.titleSize = 32;
-    }
-
     int numOnMap = 1;
     Random random = new Random();
     BufferedImage up, down, left, right;
+    boolean isExit = false;
+    boolean isExitAgain = false;
+    static boolean onTimer = true;
+    static int sumCoins = counterCoin();
 
     public Ghosts(GamePanel gp, KeyHandler keyH, int x, int y,
                   BufferedImage up, BufferedImage down, BufferedImage left, BufferedImage right) throws IOException {
@@ -32,34 +28,113 @@ public class Ghosts extends Entity implements MyFunctions {
         this.right = right;
         this.speed = 2;
         setValues();
+        System.out.println(sumCoins);
     }
 
     public void setValues() throws IOException {
         direction = "up";
     }
 
+    public static int counterCoin() {
+        int remainder;
+        int counterCoin = 0;
+        for (int i = 0; i < Board.map.length; i++) {
+            for (int j = 0; j < Board.map[i].length; j++) {
+                if (Board.map[i][j] == 1) counterCoin++;
+            }
+        }
+        remainder = counterCoin % 4;
+        if (remainder <= 2)
+            return counterCoin - remainder;
+        else return counterCoin + remainder;
+    }
+
+    private int currentGhostIndex = 0; // מנהל את האינדקס של המפלצת הנוכחית
+
+    public void myTimer(int time) {
+        currentGhostIndex = 0;
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (currentGhostIndex < gp.ghosts.size()) {
+                    Ghosts ghost = gp.ghosts.get(currentGhostIndex);
+                    if (ghost.isExit) {
+                        ghost.isExitAgain = true;
+                    }
+                    currentGhostIndex++;
+                } else {
+                    timer.cancel();
+                    Pacman.collision = false;
+                }
+            }
+        }, 0, time);
+    }
+
+    public void exitStart() {
+//        int sum = (sumCoins / 4) * 10;
+//        gp.ghosts.get(0).isExit = true;
+//        gp.ghosts.get(1).isExit = true;
+//        if (Coin.score >= sum) gp.ghosts.get(2).isExit = true;
+//        if (Coin.score >= sum * 3) gp.ghosts.get(3).isExit = true;
+//        if (Coin.score >= sum * 4) gp.ghosts.get(4).isExit = true;
+        int sum = 200;
+        if (Coin.score >= sum) gp.ghosts.get(0).isExit = true;
+        if (Coin.score >= sum * 2) gp.ghosts.get(1).isExit = true;
+        if (Coin.score >= sum * 3) gp.ghosts.get(2).isExit = true;
+        if (Coin.score >= sum * 4) gp.ghosts.get(3).isExit = true;
+        if (Coin.score >= sum * 5) gp.ghosts.get(4).isExit = true;
+    }
+
+    public void randomStart() {
+        int chase = 0;
+        int change = random.nextInt(18);
+        if (change == 0) {
+            chase = random.nextInt(gp.ghosts.size());
+        }
+        for (int i = 0; i < gp.ghosts.size(); i++) {
+            if (i == chase && gp.ghosts.get(i).isExit) {
+                gp.ghosts.get(i).chasePacman(gp.pacman);
+            } else {
+                if (gp.ghosts.get(i).isExit) gp.ghosts.get(i).moveRandom();
+            }
+        }
+    }
+
+    public void randomCollision() {
+        int chase = 0;
+        int change = random.nextInt(18);
+        if (change == 0) {
+            chase = random.nextInt(gp.ghosts.size());
+        }
+        for (int i = 0; i < gp.ghosts.size(); i++) {
+            if (i == chase && gp.ghosts.get(i).isExit && gp.ghosts.get(i).isExitAgain) {
+                gp.ghosts.get(i).chasePacman(gp.pacman);
+            } else {
+                if (i != chase && gp.ghosts.get(i).isExit && gp.ghosts.get(i).isExitAgain)
+                    gp.ghosts.get(i).moveRandom();
+            }
+        }
+    }
+
     @Override
     public void update() {
+        exitStart();
         if (Pacman.play) {
-            int chase = 0;
-            int change = random.nextInt(18);
-            if (change == 0) {
-                chase = random.nextInt(gp.ghosts.size());
-            }
-            for (int i = 0; i < gp.ghosts.size(); i++) {//מעדכן את מיקום המפלצות
-                if (i == chase) {
-                    gp.ghosts.get(i).chasePacman(gp.pacman);
-//                gp.ghosts.get(i).chasePacman(gp.pacman);
-                } else {
-                    gp.ghosts.get(i).moveRandom();
+            if (!Pacman.canEat && !Pacman.collision) {
+                randomStart();
+            } else if (Pacman.play && Pacman.collision && !Pacman.canEat) {
+                myTimer(3000);
+                randomCollision();
+            } else if (Pacman.canEat) {
+                for (Ghosts ghost : gp.ghosts) {
+                    if (ghost.isExit) ghost.moveRandom();
                 }
             }
         }
-
     }
 
     public void chasePacman(Pacman pacman) {
-        // קביעת כיוון בהתאם למיקום פקמן
         if (pacman.x < this.x && pastAble("left", y, x, Board.map, numOnMap)) {
             direction = "left";
             x -= speed;
@@ -73,106 +148,6 @@ public class Ghosts extends Entity implements MyFunctions {
             direction = "down";
             y += speed;
         }
-
-    }
-    public void afterGhost(Pacman pacman){
-        int pX = pacman.x;
-        int pY = pacman.y;
-
-        if (pX < x){
-            if (pastAble("left",y,x,Board.map,numOnMap)) x-=speed;
-
-        }
-
-        else if (pX >x)
-            if (pastAble("right",y,x,Board.map,numOnMap)) x+=speed;
-        if (pY < y)
-            if (pastAble("up",y,x,Board.map,numOnMap))y -= speed;
-
-        else if (pY > y)
-                if (pastAble("down",y,x,Board.map,numOnMap))y += speed;
-
-    }
-
-    public void chasePacmanAdvanced(Pacman pacman) {
-        int[][] map = Board.map;
-        boolean[][] visited = new boolean[map.length][map[0].length];
-        Queue<Point> queue = new LinkedList<>();
-        Point[][] parent = new Point[map.length][map[0].length];
-
-        int startX = x / titleSize;
-        int startY = y / titleSize;
-        int targetX = pacman.x / titleSize;
-        int targetY = pacman.y / titleSize;
-
-        queue.offer(new Point(startX, startY));
-        visited[startY][startX] = true;
-
-        int[] dx = {0, 0, -1, 1};
-        int[] dy = {-1, 1, 0, 0};
-
-        while (!queue.isEmpty()) {
-            Point current = queue.poll();
-
-            if (current.x == targetX && current.y == targetY) {
-                // מצא את הצעד הראשון במסלול
-                Point nextStep = backtrackFirstStep(parent, startX, startY, targetX, targetY);
-                moveToNextStep(nextStep);
-                break;
-            }
-
-            for (int i = 0; i < 4; i++) {
-                int newX = current.x + dx[i];
-                int newY = current.y + dy[i];
-
-                if (isValidMove(newX, newY, map) && !visited[newY][newX]) {
-                    queue.offer(new Point(newX, newY));
-                    visited[newY][newX] = true;
-                    parent[newY][newX] = current;
-                }
-            }
-        }
-    }
-
-    private Point backtrackFirstStep(Point[][] parent, int startX, int startY, int targetX, int targetY) {
-        Point current = new Point(targetX, targetY);
-        Point prev = null;
-
-        while (current.x != startX || current.y != startY) {
-            prev = current;
-            current = parent[current.y][current.x];
-        }
-
-        return prev;
-    }
-
-    private void moveToNextStep(Point nextStep) {
-        int newX = nextStep.x * titleSize;
-        int newY = nextStep.y * titleSize;
-
-        if (newX < x) direction = "left";
-        else if (newX > x) direction = "right";
-        else if (newY < y) direction = "up";
-        else if (newY > y) direction = "down";
-
-        x = newX;
-        y = newY;
-    }
-
-    private boolean isValidMove(int x, int y, int[][] map) {
-        return x >= 0 && x < map[0].length &&
-                y >= 0 && y < map.length &&
-                map[y][x] == 1;  // בדיקה שהמיקום פנוי
-    }
-
-    public void QueueGhost() {
-        if (Pacman.collision) {
-            Queue<Ghosts> q = new LinkedList<>();
-            for (Ghosts ghosts : gp.ghosts) {
-                q.offer(ghosts);
-            }
-            System.out.println(q);
-        }
     }
 
     public void moveRandom() {
@@ -183,13 +158,13 @@ public class Ghosts extends Entity implements MyFunctions {
             int index = r.nextInt(4);
             this.direction = directions[index];
         }
-        if (direction.equals("up") && pastAble(direction, y, x, Board.map, numOnMap)) {
+        if (direction.equals(UP) && pastAble(direction, y, x, Board.map, numOnMap)) {
             y -= speed;
-        } else if (direction.equals("down") && pastAble(direction, y, x, Board.map, numOnMap)) {
+        } else if (direction.equals(DOWN) && pastAble(direction, y, x, Board.map, numOnMap)) {
             y += speed;
-        } else if (direction.equals("left") && pastAble(direction, y, x, Board.map, numOnMap)) {
+        } else if (direction.equals(LEFT) && pastAble(direction, y, x, Board.map, numOnMap)) {
             x -= speed;
-        } else if (direction.equals("right") && pastAble(direction, y, x, Board.map, numOnMap)) {
+        } else if (direction.equals(RIGHT) && pastAble(direction, y, x, Board.map, numOnMap)) {
             x += speed;
         } else {
             int move = r.nextInt(4);
@@ -199,14 +174,22 @@ public class Ghosts extends Entity implements MyFunctions {
 
     @Override
     public void draw(Graphics2D g2) {
-        if (direction.equals("up")) image = up;
-        if (direction.equals("down")) image = down;
-        if (direction.equals("left")) image = left;
-        if (direction.equals("right")) image = right;
+        if (direction.equals(UP)) image = up;
+        if (direction.equals(DOWN)) image = down;
+        if (direction.equals(LEFT)) image = left;
+        if (direction.equals(RIGHT)) image = right;
 
         g2.drawImage(image, x, y, titleSize, titleSize, null);
     }
 
+    public void moveGhostStartPoint() {
+        int a = 8;
+        for (Ghosts ghost1 : gp.ghosts) {
+            ghost1.x = titleSize * a;
+            ghost1.y = titleSize * 8;
+            a += 1;
+        }
+    }
 
     public boolean pastAble(String direction, int y, int x, int[][] arr, int num) {
         switch (direction) {
@@ -223,59 +206,60 @@ public class Ghosts extends Entity implements MyFunctions {
     }
 
     public boolean isUp(int y, int x, int[][] arr, int num) {
-//        System.out.println("this: x: " + x + ", " + "y: " + y);
-        int y1, x1 = 0, x2 = 0;
+        int y1, x1, x2;
         y1 = (y - speed) / titleSize;
         if (x % titleSize != 0) {
             x1 = x / titleSize + 1;
             x2 = x / titleSize;
-            return arr[y1][x1] == num && arr[y1][x2] == num;
+            return arr[y1][x1] <= num && arr[y1][x2] <= num;
         } else x1 = x / titleSize;
-//        System.out.println("X & Y of function:\nx: " + y1 + ", " + "y: " + x1);
-        return arr[y1][x1] == num;
+        return arr[y1][x1] <= num;
     }
 
     public boolean isLeft(int y, int x, int[][] arr, int num) {
-//        System.out.println("x: " + x + ", " + "y: " + y);
-        int y1 = 0, y2, x1 = 0;
+        int y1, y2, x1;
         x1 = (x - speed) / titleSize;
         if (y % titleSize != 0) {
             y1 = y / titleSize;
             y2 = y / titleSize + 1;
-//            System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
-            return arr[y1][x1] == num && arr[y2][x1] == num;
+            return arr[y1][x1] <= num && arr[y2][x1] <= num;
         } else y1 = (y - speed) / titleSize + 1;
-//        System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
-        return x1 != -1 && arr[y1][x1] == 1;
+        return x1 != -1 && arr[y1][x1] <= num;
     }
 
     public boolean isDown(int y, int x, int[][] arr, int num) {
-//        System.out.println("x: " + x + ", " + "y: " + y);
-        int y1, x1 = 0, x2 = 0;
+        int y1, x1, x2;
         if ((y + speed) % titleSize != 0) {
             y1 = (y + speed) / titleSize + 1;
         } else y1 = (y + speed) / titleSize;
         if (x % titleSize != 0) {
             x1 = x / titleSize;
             x2 = x / titleSize + 1;
-            return arr[y1][x1] == num && arr[y1][x2] == num;
+            return arr[y1][x1] <= num && arr[y1][x2] <= num;
         } else x1 = x / titleSize;
-        return arr[y1][x1] == num;
+        return arr[y1][x1] <= num;
     }
 
     public boolean isRight(int y, int x, int[][] arr, int num) {
-        int y1 = 0, y2, x1 = 0;
-//        System.out.println("x: " + x + ", " + "y: " + y);
+        int y1, y2, x1;
         if ((x + speed) % titleSize != 0) {
             x1 = (x + speed) / titleSize + 1;
         } else x1 = (x + speed) / titleSize;
         if (y % titleSize != 0) {
             y1 = y / titleSize;
             y2 = y / titleSize + 1;
-//            System.out.println("X & Y of function:\nx: " + x1 + ", " + "y: " + y1);
-            return arr[y1][x1] == num && arr[y2][x1] == num;
+            return arr[y1][x1] <= num && arr[y2][x1] <= num;
         } else y1 = y / titleSize;
-        return x1 < Board.map[y1].length && arr[y1][x1] == num;
+        return x1 < Board.map[y1].length && arr[y1][x1] <= num;
+    }
+
+
+    public boolean isStartGhost() {
+        return gp.ghosts.get(0).x == titleSize * 8 && gp.ghosts.get(0).y == titleSize * 8 &&
+                gp.ghosts.get(1).x == titleSize * 9 && gp.ghosts.get(1).y == titleSize * 8 &&
+                gp.ghosts.get(2).x == titleSize * 10 && gp.ghosts.get(2).y == titleSize * 8 &&
+                gp.ghosts.get(3).x == titleSize * 11 && gp.ghosts.get(3).y == titleSize * 8 &&
+                gp.ghosts.get(4).x == titleSize * 12 && gp.ghosts.get(4).y == titleSize * 8;
     }
 }
 //        }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pac-Man Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Pac-Man Game</h1>
+        <p>An exciting 2D Pac-Man game built in Java!</p>
+    </header>
+
+    <main>
+        <section>
+            <h2>About the Game</h2>
+            <p>This Pac-Man game allows players to control the character and navigate through a maze while avoiding walls and obstacles. The game uses a grid-based layout and features collision detection for smooth gameplay.</p>
+        </section>
+
+        <section>
+            <h2>Features</h2>
+            <ul>
+                <li>Keyboard controls for smooth movement.</li>
+                <li>Collision detection to avoid walls.</li>
+                <li>Resizable Pac-Man character without affecting grid size.</li>
+                <li>Optimized for responsive direction switching.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Installation</h2>
+            <ol>
+                <li>Clone the repository:
+                    <pre><code>git clone https://github.com/username/pacman-game.git</code></pre>
+                </li>
+                <li>Navigate to the project directory:
+                    <pre><code>cd pacman-game</code></pre>
+                </li>
+                <li>Run the game:
+                    <pre><code>java Main</code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Screenshots</h2>
+            <p>Here’s what the game looks like:</p>
+            <img src="game pacman.png" alt="Pac-Man Screenshot" style="max-width: 100%; height: auto;">
+        </section>
+
+        <section>
+            <h2>Contributing</h2>
+            <p>Want to improve the game? Feel free to fork the repository and submit a pull request. Bug reports are welcome!</p>
+        </section>
+
+        <section>
+            <h2>License</h2>
+            <p>This project is licensed under the MIT License.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Pac-Man Game Project</p>
+    </footer>
+</body>
+</html>

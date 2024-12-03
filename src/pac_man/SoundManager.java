@@ -9,6 +9,7 @@ public class SoundManager {
     private static Clip diedClip;
     private static Clip eatCoinClip;
     private static Clip nextLevelClip;
+    private static Clip scaryClip;
 
     public static String fullPath(String p) {
         return "src/resource/sound/" + p + ".wav";
@@ -35,6 +36,10 @@ public class SoundManager {
             AudioInputStream nextLevelStream = AudioSystem.getAudioInputStream(new File(fullPath("next_level")));
             nextLevelClip = AudioSystem.getClip();
             nextLevelClip.open(nextLevelStream);
+
+//            AudioInputStream scaryStream = AudioSystem.getAudioInputStream(new File(fullPath("scary")));
+//            scaryClip = AudioSystem.getClip();
+//            scaryClip.open(scaryStream);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,9 +77,16 @@ public class SoundManager {
 
     public static void playNextLevel() {
         if (nextLevelClip != null && !nextLevelClip.isRunning()) {
-            stopAll();
+//            stopAll();
             nextLevelClip.setFramePosition(0);
             nextLevelClip.start();
+        }
+    }
+    public static void scary() {
+        if (scaryClip != null && !scaryClip.isRunning()) {
+//            stopAll();
+            scaryClip.setFramePosition(0);
+            scaryClip.start();
         }
     }
     public static void stopAll(){
