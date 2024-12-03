@@ -95,6 +95,7 @@ public class SoundManager {
         eatCoinClip.stop();
         diedClip.stop();
         nextLevelClip.stop();
+//        scaryClip.stop();
     }
 
     public static void main(String[] args) throws InterruptedException {

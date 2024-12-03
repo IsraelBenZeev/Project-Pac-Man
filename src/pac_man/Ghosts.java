@@ -1,6 +1,5 @@
 package pac_man;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -38,9 +37,9 @@ public class Ghosts extends Entity implements MyFunctions {
     public static int counterCoin() {
         int remainder;
         int counterCoin = 0;
-        for (int i = 0; i < Board.map.length; i++) {
-            for (int j = 0; j < Board.map[i].length; j++) {
-                if (Board.map[i][j] == 1) counterCoin++;
+        for (int i = 0; i < Board.level1.length; i++) {
+            for (int j = 0; j < Board.level1[i].length; j++) {
+                if (Board.level1[i][j] == 1) counterCoin++;
             }
         }
         remainder = counterCoin % 4;
@@ -135,20 +134,21 @@ public class Ghosts extends Entity implements MyFunctions {
     }
 
     public void chasePacman(Pacman pacman) {
-        if (pacman.x < this.x && pastAble("left", y, x, Board.map, numOnMap)) {
+        if (pacman.x < this.x && pastAble("left", y, x, Board.level1, numOnMap)) {
             direction = "left";
             x -= speed;
-        } else if (pacman.x > this.x && pastAble("right", y, x, Board.map, numOnMap)) {
+        } else if (pacman.x > this.x && pastAble("right", y, x, Board.level1, numOnMap)) {
             direction = "right";
             x += speed;
-        } else if (pacman.y < this.y && pastAble("up", y, x, Board.map, numOnMap)) {
+        } else if (pacman.y < this.y && pastAble("up", y, x, Board.level1, numOnMap)) {
             direction = "up";
             y -= speed;
-        } else if (pacman.y > this.y && pastAble("down", y, x, Board.map, numOnMap)) {
+        } else if (pacman.y > this.y && pastAble("down", y, x, Board.level1, numOnMap)) {
             direction = "down";
             y += speed;
         }
     }
+
 
     public void moveRandom() {
         String[] directions = {"up", "down", "left", "right"};
@@ -158,13 +158,13 @@ public class Ghosts extends Entity implements MyFunctions {
             int index = r.nextInt(4);
             this.direction = directions[index];
         }
-        if (direction.equals(UP) && pastAble(direction, y, x, Board.map, numOnMap)) {
+        if (direction.equals(UP) && pastAble(direction, y, x, Board.level1, numOnMap)) {
             y -= speed;
-        } else if (direction.equals(DOWN) && pastAble(direction, y, x, Board.map, numOnMap)) {
+        } else if (direction.equals(DOWN) && pastAble(direction, y, x, Board.level1, numOnMap)) {
             y += speed;
-        } else if (direction.equals(LEFT) && pastAble(direction, y, x, Board.map, numOnMap)) {
+        } else if (direction.equals(LEFT) && pastAble(direction, y, x, Board.level1, numOnMap)) {
             x -= speed;
-        } else if (direction.equals(RIGHT) && pastAble(direction, y, x, Board.map, numOnMap)) {
+        } else if (direction.equals(RIGHT) && pastAble(direction, y, x, Board.level1, numOnMap)) {
             x += speed;
         } else {
             int move = r.nextInt(4);
@@ -250,7 +250,7 @@ public class Ghosts extends Entity implements MyFunctions {
             y2 = y / titleSize + 1;
             return arr[y1][x1] <= num && arr[y2][x1] <= num;
         } else y1 = y / titleSize;
-        return x1 < Board.map[y1].length && arr[y1][x1] <= num;
+        return x1 < Board.level1[y1].length && arr[y1][x1] <= num;
     }
 
 

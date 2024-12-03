@@ -100,29 +100,29 @@ public class Pacman extends Entity implements MyFunctions {
 
     public void update() {
         boolean block =
-                keyH.upPressed && !pastAble("up", y, x, Board.map, numOnMap) ||
-                        keyH.downPressed && !pastAble("down", y, x, Board.map, numOnMap) ||
-                        keyH.leftPressed && !pastAble("left", y, x, Board.map, numOnMap) ||
-                        keyH.rightPressed && !pastAble("right", y, x, Board.map, numOnMap);
-        if ((keyH.upPressed || block && direction.equals(UP)) && pastAble(UP, y, x, Board.map, numOnMap)) {
+                keyH.upPressed && !pastAble("up", y, x, Board.level1, numOnMap) ||
+                        keyH.downPressed && !pastAble("down", y, x, Board.level1, numOnMap) ||
+                        keyH.leftPressed && !pastAble("left", y, x, Board.level1, numOnMap) ||
+                        keyH.rightPressed && !pastAble("right", y, x, Board.level1, numOnMap);
+        if ((keyH.upPressed || block && direction.equals(UP)) && pastAble(UP, y, x, Board.level1, numOnMap)) {
             direction = UP;
             y -= speed;
         }
-        if ((keyH.downPressed || block && direction.equals(DOWN)) && pastAble(DOWN, y, x, Board.map, numOnMap)) {
+        if ((keyH.downPressed || block && direction.equals(DOWN)) && pastAble(DOWN, y, x, Board.level1, numOnMap)) {
             direction = DOWN;
             y += speed;
         }
-        if ((keyH.leftPressed || block && direction.equals(LEFT)) && pastAble(LEFT, y, x, Board.map, numOnMap)) {
+        if ((keyH.leftPressed || block && direction.equals(LEFT)) && pastAble(LEFT, y, x, Board.level1, numOnMap)) {
             direction = LEFT;
             x -= speed;
             if (x < titleSize) {
-                x = (Board.map.length - 1) * titleSize;
+                x = (Board.level1.length - 1) * titleSize;
             }
         }
-        if ((keyH.rightPressed || block && direction.equals(RIGHT)) && pastAble(RIGHT, y, x, Board.map, numOnMap)) {
+        if ((keyH.rightPressed || block && direction.equals(RIGHT)) && pastAble(RIGHT, y, x, Board.level1, numOnMap)) {
             direction = RIGHT;
             x += speed;
-            if (x == (Board.map[0].length - 1) * titleSize) {
+            if (x == (Board.level1[0].length - 1) * titleSize) {
                 x = titleSize;
             }
         }
@@ -213,7 +213,7 @@ public class Pacman extends Entity implements MyFunctions {
             y2 = y / titleSize + 1;
             return arr[y1][x1] <= num && arr[y2][x1] <= num;
         } else y1 = y / titleSize;
-        return x1 < Board.map[y1].length && arr[y1][x1] <= num;
+        return x1 < Board.level1[y1].length && arr[y1][x1] <= num;
     }
 
 }

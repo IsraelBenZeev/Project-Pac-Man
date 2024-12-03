@@ -21,7 +21,7 @@ public class MainMenu {
     static JPanel menuPanel;
     static JFrame menuFrame;
     public static void openGame(JFrame menu) throws IOException {
-        GamePanel gamePanel = new GamePanel();
+        GamePanel gamePanel =  GamePanel.setGamePanel();
         menu.setContentPane(gamePanel);
 
         menu.revalidate();
@@ -72,7 +72,7 @@ public class MainMenu {
 
 
             JLabel enterName = new JLabel("your name:");
-            enterName.setBounds(40, 10, 180, 50);
+            enterName.setBounds(45, 10, 180, 50);
             enterName.setFont(new Font("Verdana", Font.BOLD, 25));
             enterName.setForeground(new Color(250,145,16));
             namePanel.setLayout(null);

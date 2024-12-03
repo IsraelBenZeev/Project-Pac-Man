@@ -11,6 +11,40 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements Runnable {
+
+    static private GamePanel gamePanel;
+
+    public static GamePanel setGamePanel() throws IOException {
+        if (gamePanel != null){
+            gamePanel = null;// new GamePanel();
+        }
+        gamePanel = new GamePanel();
+        return gamePanel;
+    }
+
+    private GamePanel() throws IOException {
+        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
+        this.setBackground(new Color(49, 99, 99, 246));
+        this.setDoubleBuffered(true);
+        this.addKeyListener(keyH);
+        this.setFocusable(true);
+        this.setLayout(null);
+
+        setImages();
+
+        Ghosts b = new Ghosts(this, keyH, tileSize * 8, tileSize * 8, blueUp, blueDown, blueLeft, blueRight);
+        Ghosts p = new Ghosts(this, keyH, tileSize * 9, tileSize * 8, pinkUp, pinkDown, pinkLeft, pinkRight);
+        Ghosts o = new Ghosts(this, keyH, tileSize * 10, tileSize * 8, orangeUp, orangeDown, orangeLeft, orangeRight);
+        Ghosts r = new Ghosts(this, keyH, tileSize * 11, tileSize * 8, redUp, redDown, redLeft, redRight);
+        Ghosts g = new Ghosts(this, keyH, tileSize * 12, tileSize * 8, greenUp, greenDown, greenLeft, greenRight);
+
+        ghosts.add(b);
+        ghosts.add(p);
+        ghosts.add(o);
+        ghosts.add(r);
+        ghosts.add(g);
+    }
+
     public final int tileSize = 32;
     public final int maxScreenCol = 22;//עמודות
     public final int maxScreenRow = 22;//שורות
@@ -113,29 +147,6 @@ public class GamePanel extends JPanel implements Runnable {
         return "/resource/ghosts/" + p;
     }
 
-    public GamePanel() throws IOException {
-        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
-        this.setBackground(new Color(49, 99, 99, 246));
-        this.setDoubleBuffered(true);
-        this.addKeyListener(keyH);
-        this.setFocusable(true);
-        this.setLayout(null);
-
-        setImages();
-
-        Ghosts b = new Ghosts(this, keyH, tileSize * 8, tileSize * 8, blueUp, blueDown, blueLeft, blueRight);
-        Ghosts p = new Ghosts(this, keyH, tileSize * 9, tileSize * 8, pinkUp, pinkDown, pinkLeft, pinkRight);
-        Ghosts o = new Ghosts(this, keyH, tileSize * 10, tileSize * 8, orangeUp, orangeDown, orangeLeft, orangeRight);
-        Ghosts r = new Ghosts(this, keyH, tileSize * 11, tileSize * 8, redUp, redDown, redLeft, redRight);
-        Ghosts g = new Ghosts(this, keyH, tileSize * 12, tileSize * 8, greenUp, greenDown, greenLeft, greenRight);
-
-        ghosts.add(b);
-        ghosts.add(p);
-        ghosts.add(o);
-        ghosts.add(r);
-        ghosts.add(g);
-    }
-
     Thread gameThread;
 
     public void setGameThread() throws IOException {
@@ -145,6 +156,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("BEFORE");
+        System.out.println("MAP");
+        print2DArray(Board.level1);
+        System.out.println("----------------------");
          SoundManager.playStart();
         double drawInterval = 1000000000 / FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
@@ -251,11 +266,12 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void level_2() throws IOException {
         if (Coin.score >= 1250 && Coin.level == 1) {
+            if (Pacman.lives == 2 || Pacman.lives == 1) Pacman.lives = 3;
 //        Coin coin = new Coin(this,pacman);
             Coin.timerFruit = 200;
             Coin.currentTimer = 200;
             SoundManager.playNextLevel();
-            Board.map = Board.level1;
+            Board.level1 = Board.level1;
             Coin.level = 2;
             for (Ghosts ghost : ghosts) {
                 ghost.speed = 2;
@@ -265,6 +281,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void level_3() throws IOException {
         if (Coin.score >= 2000 && Coin.level == 2) {
+            if (Pacman.lives == 2 || Pacman.lives == 1) Pacman.lives = 3;
 //        Coin coin = new Coin(this,pacman);
         Coin.timerFruit = 150;
         Coin.currentTimer = 150;
@@ -332,50 +349,57 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    // הוסף מתודה חדשה זו
-    public void returnToMainMenu() throws IOException {
-        MainMenu.menuFrame.setContentPane(MainMenu.menuPanel);
-        MainMenu.menuFrame.revalidate();
-        MainMenu.menuFrame.repaint();
-        gameThread = null; // עצור את חוט המשחק
-    }
-
     private boolean isReturningToMenu = false;
 
     public void playAgain() throws IOException {
-        if (isReturningToMenu) return;
-        isReturningToMenu = true;
+//        if (isReturningToMenu) return;
+//        isReturningToMenu = true;
         MainMenu.menuFrame.setContentPane(MainMenu.menuPanel);
         MainMenu.menuFrame.revalidate();
         MainMenu.menuFrame.repaint();
         gameThread = null; // עצור את חוט המשחק
         System.out.println("print");
-//        Main.menuFrame.setContentPane(Main.menuPanel);
         gameRunning = true;
         Coin.score = 0;
         Pacman.lives = 3;
         Coin.level = 1;
         Pacman.canEat = false;
-        SoundManager.playStart();
         pacman.movePacmanStartPoint();
         ghosts.get(0).moveGhostStartPoint();
         for (Ghosts ghost : ghosts) {
             ghost.isExit = false;
             ghost.isExitAgain = false;
         }
-//        Ghosts.onTimer = true;
         keyH.upPressed = keyH.downPressed = keyH.leftPressed = keyH.rightPressed = false;
+
         changeMapTo1();
+
+        System.out.println("AFTER");
+        System.out.println("MAP");
+        print2DArray(Board.level1);
+        System.out.println("----------------------");
     }
 
     public void changeMapTo1() {
-        for (int i = 0; i < Board.map.length; i++) {
-            for (int j = 0; j < Board.map[i].length; j++) {
-                if (Board.map[i][j] == 0) Board.map[i][j] = 1;
-                else if (Board.map[i][j] == -6) Board.map[i][j] = -1;
+        Board.level1 = Board.enterTo2DNew(Board.level2);
+//        for (int i = 0; i < Board.map.length; i++) {
+//            for (int j = 0; j < Board.map[i].length; j++) {
+//                if (i == 0 && j == 0) continue;
+//                if (Board.map[i][j] == 0) Board.map[i][j] = 1;
+//                else if (Board.map[i][j] == -6) Board.map[i][j] = -1;
+//            }
+//        }
+    }
+
+    public void print2DArray(int[][] array) {
+        for (int i = 0; i < array.length; i++) { // לולאה על כל השורות
+            for (int j = 0; j < array[i].length; j++) { // לולאה על כל העמודות בשורה
+                System.out.print(array[i][j] + "\t"); // הדפסת הערך עם טאב להפרדה
             }
+            System.out.println(); // ירידת שורה לאחר סיום כל שורה
         }
     }
+
 }
 
 

@@ -41,9 +41,9 @@ public class Coin extends Entity implements MyFunctions {
             yF += (titleSize - Fruits.size) / 2;
             xF = random.nextInt(titleSize, titleSize * 20);
             xF += (titleSize - Fruits.size) / 2;
-            if ((Board.map[yF / titleSize][xF / titleSize] == 1 || Board.map[yF / titleSize][xF / titleSize] == 0) && xF % 32 == 0 && yF % 32 == 0) {
-                saveLocation = Board.map[(yF + (titleSize - Fruits.size) / 2) / 32][(xF + (titleSize - Fruits.size) / 2) / 32];
-                Board.map[(yF + (titleSize - Fruits.size) / 2) / 32][(xF + (titleSize - Fruits.size) / 2) / 32] = random.nextInt(-5, -1);
+            if ((Board.level1[yF / titleSize][xF / titleSize] == 1 || Board.level1[yF / titleSize][xF / titleSize] == 0) && xF % 32 == 0 && yF % 32 == 0) {
+                saveLocation = Board.level1[(yF + (titleSize - Fruits.size) / 2) / 32][(xF + (titleSize - Fruits.size) / 2) / 32];
+                Board.level1[(yF + (titleSize - Fruits.size) / 2) / 32][(xF + (titleSize - Fruits.size) / 2) / 32] = random.nextInt(-5, -1);
                 b = false;
             }
         }
@@ -59,18 +59,18 @@ public class Coin extends Entity implements MyFunctions {
                 setFruitRandom();
             }
         }
-        if (Board.map[pacman.y / titleSize][pacman.x / titleSize] == 1) {
-            Board.map[pacman.y / titleSize][pacman.x / titleSize] = 0;
+        if (Board.level1[pacman.y / titleSize][pacman.x / titleSize] == 1) {
+            Board.level1[pacman.y / titleSize][pacman.x / titleSize] = 0;
             score += 10;
         }
-        else if ((Board.map[pacman.y / titleSize][pacman.x / titleSize] == -1)) {
+        else if ((Board.level1[pacman.y / titleSize][pacman.x / titleSize] == -1)) {
             SoundManager.playEatCoin();
-            Board.map[pacman.y / titleSize][pacman.x / titleSize] = -6;
+            Board.level1[pacman.y / titleSize][pacman.x / titleSize] = -6;
             score += 50;
             pacman.canEat = true;
             pacman.timer = 300;
-        } else if ((Board.map[pacman.y / titleSize][pacman.x / titleSize] <= -2) && Board.map[pacman.y / titleSize][pacman.x / titleSize] >= -5) {
-            Board.map[pacman.y / titleSize][pacman.x / titleSize] = -7;
+        } else if ((Board.level1[pacman.y / titleSize][pacman.x / titleSize] <= -2) && Board.level1[pacman.y / titleSize][pacman.x / titleSize] >= -5) {
+            Board.level1[pacman.y / titleSize][pacman.x / titleSize] = -7;
             timerFruit = currentTimer;
             score += 30;// &&
             SoundManager.playEatCoin();
@@ -88,9 +88,9 @@ public class Coin extends Entity implements MyFunctions {
 
     public void draw(Graphics2D g2) {
         setEating();
-        for (int i = 0; i < Board.map.length; i++) {
-            for (int j = 0; j < Board.map[i].length; j++) {
-                switch (Board.map[i][j]) {
+        for (int i = 0; i < Board.level1.length; i++) {
+            for (int j = 0; j < Board.level1[i].length; j++) {
+                switch (Board.level1[i][j]) {
                     case 1:
                         int x = j * titleSize + (titleSize - coinSize) / 2;
                         int y = i * titleSize + (titleSize - coinSize) / 2;
@@ -129,7 +129,7 @@ public class Coin extends Entity implements MyFunctions {
                         break;
                 }
             }
-            if (spriteCounter > 150) {
+            if (spriteCounter > 250) {
                 if (spriteNum == 1) spriteNum = 2;
                 else if (spriteNum == 2) spriteNum = 1;
                 spriteCounter = 0;
@@ -143,8 +143,8 @@ public class Coin extends Entity implements MyFunctions {
             g2.drawImage(image, x, y, Fruits.size, Fruits.size, null);
             timerFruit--;
         } else {
-            if (saveLocation == 1)Board.map[yF / titleSize][xF / titleSize] = 1;
-            else if (saveLocation == 0)Board.map[yF / titleSize][xF / titleSize] = 0;
+            if (saveLocation == 1)Board.level1[yF / titleSize][xF / titleSize] = 1;
+            else if (saveLocation == 0)Board.level1[yF / titleSize][xF / titleSize] = 0;
             timerFruit = currentTimer;
         }
     }

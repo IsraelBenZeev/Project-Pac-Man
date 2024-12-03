@@ -83,3 +83,18 @@
 | name player: Player 1 | score: 780 | level: 1 |
 | name player: Player 1 | score: 4650 | level: 3 |
 | name player: Player 1 | score: 4650 | level: 3 |
+| name player: Player 1 | score: 380 | level: 1 |
+| name player: Player 1 | score: 380 | level: 1 |
+| name player: Player 1 | score: 1240 | level: 1 |
+| name player: Player 1 | score: 1240 | level: 1 |
+| name player: Player 1 | score: 2710 | level: 3 |
+| name player: Player 1 | score: 770 | level: 1 |
+| name player: Player 1 | score: 770 | level: 1 |
+| name player: אלי | score: 1420 | level: 2 |
+| name player: Player 1 | score: 960 | level: 1 |
+| name player: Player 1 | score: 960 | level: 1 |
+| name player: Player 1 | score: 400 | level: 1 |
+| name player: Player 1 | score: 430 | level: 1 |
+| name player: Player 1 | score: 430 | level: 1 |
+| name player: Player 1 | score: 570 | level: 1 |
+| name player: Player 1 | score: 570 | level: 1 |

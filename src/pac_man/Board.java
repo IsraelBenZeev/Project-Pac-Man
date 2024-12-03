@@ -1,7 +1,7 @@
 package pac_man;
 
 public class Board {
-    static int[][] map = {
+    static int[][] level1 = {
     //0///1///2//3////4///5///6///7///8///9//10//11//12//13//14//15//16//17//18//19//20///21
     { 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,  6 }, // 0
     { 3, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,  4 }, // 1
@@ -27,8 +27,8 @@ public class Board {
     { 7,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  8 }  // 21
     };
 
-    static int[][] level1 = enterTo2DNew(map);
     static int[][] level2 = enterTo2DNew(level1);
+    static int[][] level3 = enterTo2DNew(level2);
 
 
     public static int[][] enterTo2DNew(int[][] map){
