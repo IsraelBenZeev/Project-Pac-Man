@@ -87,7 +87,7 @@ public class MainMenu {
 
             namePanel.add(nameField);
 
-        // מאזין לשינויים בשדה טקסט
+
         nameField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -195,7 +195,7 @@ public class MainMenu {
                 instructionsPanel.add(instructionsText);
 
                 // יצירת כפתור חזרה לתפריט הראשי
-                JButton backToMenu = new JButton("BACK TO MENU");
+                JButton backToMenu = new JButton("BACK");
                 backToMenu.setBackground(new Color(236, 221, 172));
                 backToMenu.setBounds(250, 450, 180, 70);
                 backToMenu.setFont(new Font("Verdana", Font.BOLD, 20));
@@ -227,7 +227,6 @@ public class MainMenu {
 
 
     public static void openResult(JFrame frame) {
-        // יצירת פאנל ראשי לתוצאות
         JPanel resultPanel = new JPanel();
         resultPanel.setBackground(new Color(87, 129, 236));
         resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS)); // ארגון אנכי של הכרטיסים
@@ -251,7 +250,7 @@ public class MainMenu {
             System.out.println("Error reading from file: " + e.getMessage());
         }
 
-        // כותרת ראשית
+
         JLabel title = new JLabel("Board Result:");
         title.setFont(new Font("Verdana", Font.BOLD, 40));
         title.setForeground(new Color(250, 145, 16));

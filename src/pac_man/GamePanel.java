@@ -156,15 +156,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("BEFORE");
-        System.out.println("MAP");
-        print2DArray(Board.level1);
-        System.out.println("----------------------");
          SoundManager.playStart();
         double drawInterval = 1000000000 / FPS;
         double nextDrawTime = System.nanoTime() + drawInterval;
         while (gameThread != null) {
-            if (keyH.spacePressed && !isReturningToMenu) {
+            if (keyH.spacePressed ) {
                 try {
                     playAgain();
                     break;
@@ -189,16 +185,8 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-//    private boolean spacePressedPreviously = false; // עוקב אחרי המצב הקודם של המקש
 
     public void update() throws InterruptedException, IOException {
-//        if (keyH.spacePressed && !spacePressedPreviously) {
-//            // המקש עבר ממצב לא לחוץ ללחוץ
-//            playAgain(); // הפעל את הפעולה
-//        }
-//        // עדכון המצב הקודם של המקש
-//        spacePressedPreviously = keyH.spacePressed;
-
         ghosts.get(1).update();
         pacman.update();
         imageEat();
@@ -268,7 +256,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (Coin.score >= 1250 && Coin.level == 1) {
             if (Pacman.lives == 2 || Pacman.lives == 1) Pacman.lives = 3;
 //        Coin coin = new Coin(this,pacman);
-            Coin.timerFruit = 200;
+//            Coin.timerFruit = 200;
             Coin.currentTimer = 200;
             SoundManager.playNextLevel();
             Board.level1 = Board.level1;
@@ -283,7 +271,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (Coin.score >= 2000 && Coin.level == 2) {
             if (Pacman.lives == 2 || Pacman.lives == 1) Pacman.lives = 3;
 //        Coin coin = new Coin(this,pacman);
-        Coin.timerFruit = 150;
+//        Coin.timerFruit = 150;
         Coin.currentTimer = 150;
             Board.level1 = Board.level2;
             SoundManager.playNextLevel();
@@ -296,7 +284,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void gameOver(Graphics2D g2) throws IOException, InterruptedException {
         if (Pacman.lives == 0) {
-            resultsBoard(); // מציג לוח תוצאות
+            resultsBoard();
 
             String gameOverText = "GAME OVER";
             g2.setFont(new Font("Verdana", Font.BOLD, 40));
@@ -304,19 +292,18 @@ public class GamePanel extends JPanel implements Runnable {
             int textWidth = metrics.stringWidth(gameOverText);
             int textHeight = metrics.getHeight();
 
-            // חישוב מיקום הרקע והטקסט
-            int x = tileSize * 7 - 8; // מיקום אופקי
-            int y = tileSize * 8;     // מיקום אנכי
+            //background
+            int x = tileSize * 7 - 8;
+            int y = tileSize * 8;
             int rectX = x - 10;       // הוספת שוליים למלבן
             int rectY = y - textHeight + 10;
             int rectWidth = textWidth + 20;
             int rectHeight = textHeight;
 
-            // ציור רקע
+
             g2.setColor(new Color(250, 145, 16)); // צבע רקע עם שקיפות
             g2.fillRect(rectX, rectY, rectWidth, rectHeight);
 
-            // ציור הטקסט
             g2.setColor(Color.WHITE); // צבע הטקסט
             g2.drawString(gameOverText, x, y);
 
@@ -349,11 +336,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    private boolean isReturningToMenu = false;
-
     public void playAgain() throws IOException {
-//        if (isReturningToMenu) return;
-//        isReturningToMenu = true;
         MainMenu.menuFrame.setContentPane(MainMenu.menuPanel);
         MainMenu.menuFrame.revalidate();
         MainMenu.menuFrame.repaint();
@@ -374,10 +357,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         changeMapTo1();
 
-        System.out.println("AFTER");
-        System.out.println("MAP");
-        print2DArray(Board.level1);
-        System.out.println("----------------------");
     }
 
     public void changeMapTo1() {
