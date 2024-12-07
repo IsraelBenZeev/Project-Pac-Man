@@ -42,7 +42,7 @@ To install and run the game, follow these steps:
 
 Here’s what the game looks like:
 
-![Pac-Man Screenshot](game%20pacman.png)
+![Pac-Man Screenshot](src/screenShootPacman.png)
 
 *Image has a bright yellow Pac-Man character in a dark maze with grid-based tiles.*
 
